@@ -21,6 +21,12 @@ def get_claimants_jobs():
     return jobs
 
 
+def get_claimants_interests():
+    interests = []
+    interests.append(input("which job would you be interested in applying for?"))
+    return interests
+
+
 def get_soc_code(job):
     soc_response = api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', str(job))
     if len(soc_response) == 0:
@@ -121,3 +127,4 @@ if __name__ == "__main__":
         top_skills.append(skill_list[i]['id'])
     rev = reverse_search(top_skills)
     find_job(rev, job_num)
+

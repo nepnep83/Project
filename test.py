@@ -17,6 +17,12 @@ class MyTestCase(unittest.TestCase):
         actual_data = main.get_claimants_jobs()
         self.assertEqual(expected_data, actual_data)
 
+    @mock.patch('builtins.input', side_effect=['plumber'])
+    def test_get_claimants_interests(self, mock):
+        expected_data = ['plumber']
+        actual_data = main.get_claimants_interests()
+        self.assertEqual(expected_data, actual_data)
+
     @mock.patch('requests.get')
     def test_get_soc_code(self, mocked_request):
         job = "1"
