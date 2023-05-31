@@ -2,8 +2,6 @@ import unittest
 from unittest import mock
 from unittest.mock import Mock
 
-import requests
-
 import main
 
 _range = 2
@@ -30,11 +28,24 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
+    def test_invalid_job_input(self, mocked_request):
+        job = "invalid_job"
+        expected_data = job + " is not a valid input"
+        mocked_request.return_value = Mock(text='[]', status_code=200)
+        try:
+            actual_data = main.get_soc_code(job)
+        except Exception as e:
+            actual_data = str(e)
+
+        mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/search?q=invalid_job', verify=False)
+        self.assertEqual(expected_data, actual_data)
+
+    @mock.patch('requests.get')
     def test_soc_to_onet(self, mocked_request):
         soc = "1"
         expected_data = "53-6041.00"
 
-        mocked_request.return_value = Mock(text='{"onetCodes":[{"code":"53-6041.00"}]}')
+        mocked_request.return_value = Mock(text='{"onetCodes":[{"code":"53-6041.00"}]}', status_code=200)
         actual_data = main.soc_to_onet(soc)
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/1', verify=False)
         self.assertEqual(expected_data, actual_data)
@@ -43,6 +54,18 @@ class MyTestCase(unittest.TestCase):
         e = {'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}
         expected_data = 4.0
         actual_data = main.key(e)
+        self.assertEqual(expected_data, actual_data)
+
+    @mock.patch('requests.get')
+    def test_reverse_search(self, mocked_request):
+        skills = '1'
+        expected_data = [1115]
+        mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
+                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}',
+                                           status_code=200)
+        actual_data = main.reverse_search(skills)
+        mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
+                                          '%2C100%2C100&skills=1', verify=False)
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch("main.skill_list", skill_list)
@@ -86,35 +109,16 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
-    def test_reverse_search(self, mocked_request):
-        skills = '1'
-        expected_data = 1115
-        mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
-                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}')
-        actual_data = main.reverse_search(skills)
-        mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
-                                          '%2C100%2C100&skills=1', verify=False)
-        self.assertEqual(expected_data, actual_data)
-
-    @mock.patch('requests.get')
     def test_find_job(self, mocked_request):
-        rev = '1'
-        expected_data = 'Chief executives and senior officials'
+        rev = ['1']
+        job_num = 1
+        expected_data = ['Chief executives and senior officials']
         mocked_request.return_value = Mock(text='{"soc":1115,"title":"Chief executives and senior officials"}',
                                            status_code=200)
 
-        actual_data = main.find_job(rev)
+        actual_data = main.find_job(rev, job_num)
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/code/1', verify=False)
-        self.assertEqual(expected_data, actual_data)
-
-    def test_invalid_job_input(self):
-        job = "invalid_job"
-        expected_data = job + " is not a valid input"
-        try:
-            actual_data = main.get_soc_code(job)
-        except Exception as e:
-            actual_data = str(e)
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
@@ -122,13 +126,12 @@ class MyTestCase(unittest.TestCase):
         expected_data = 'There seems to be a issue getting your job recommendations back to you, please try again later'
         mocked_request.return_value = Mock(status_code=400)
 
-        try:
-            actual_data = main.api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', 'plumber')
-        except Exception as e:
-            actual_data = str(e)
+        with self.assertRaises(Exception) as context:
+            main.api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', 'plumber')
 
+        self.assertEquals(expected_data, str(context.exception))
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/search?q=plumber', verify=False)
-        self.assertEqual(expected_data, actual_data)
+
 
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@ import requests
 skill_list = []
 skill_id = []
 _range = 15
+job_num = 5
 
 
 def get_claimants_jobs():
@@ -29,7 +30,6 @@ def get_soc_code(job):
     return soc
 
 
-
 def soc_to_onet(soc):
     onet_response = api_call('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/', str(soc))
     onet_data = onet_response['onetCodes']
@@ -50,7 +50,6 @@ def reverse_search(skills):
     for i in range(len(rev_data)):
         rev_data2 = rev_data[i]
         rev.append(rev_data2['likely_soc_codes'][0])
-    print(rev)
     return rev
 
 
@@ -85,9 +84,9 @@ def skill_sort(skills):
     return skill_id
 
 
-def find_job(rev):
+def find_job(rev, job_num):
     job = []
-    for i in range(5):
+    for i in range(job_num):
         job_response = api_call('https://api.lmiforall.org.uk/api/v1/soc/code/', str(rev[i]))
         job.append(job_response['title'])
     print("Your recommended jobs are ", job)
@@ -121,4 +120,4 @@ if __name__ == "__main__":
     for i in range(_range):
         top_skills.append(skill_list[i]['id'])
     rev = reverse_search(top_skills)
-    find_job(rev)
+    find_job(rev, job_num)
