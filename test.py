@@ -61,7 +61,8 @@ class MyTestCase(unittest.TestCase):
         skills = '1'
         expected_data = [1115]
         mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
-                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}', status_code=200)
+                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}',
+                                           status_code=200)
         actual_data = main.reverse_search(skills)
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
                                           '%2C100%2C100&skills=1', verify=False)
@@ -125,13 +126,12 @@ class MyTestCase(unittest.TestCase):
         expected_data = 'There seems to be a issue getting your job recommendations back to you, please try again later'
         mocked_request.return_value = Mock(status_code=400)
 
-        try:
-            actual_data = main.api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', 'plumber')
-        except Exception as e:
-            actual_data = str(e)
+        with self.assertRaises(Exception) as context:
+            main.api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', 'plumber')
 
+        self.assertEquals(expected_data, str(context.exception))
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/search?q=plumber', verify=False)
-        self.assertEqual(expected_data, actual_data)
+
 
 
 if __name__ == '__main__':
