@@ -2,8 +2,6 @@ import unittest
 from unittest import mock
 from unittest.mock import Mock
 
-import requests
-
 import main
 
 _range = 2
