@@ -11,7 +11,7 @@ class MyTestCase(unittest.TestCase):
 
     @mock.patch('builtins.input', side_effect=['engineer', 'No'])
     def test_get_claimants_jobs(self, mock):
-        expected_data = ['engieer']
+        expected_data = ['engier']
         actual_data = main.get_claimants_jobs()
         self.assertEqual(expected_data, actual_data)
 
