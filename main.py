@@ -1,9 +1,8 @@
 import json
 import requests
 
-skill_list = []
-skill_id = []
 _range = 15
+interests_range = 5
 job_num = 5
 
 
@@ -28,7 +27,7 @@ def get_claimants_interests():
 
 
 def get_soc_code(job):
-    soc_response = api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', str(job))
+    soc_response = api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=' + str(job))
     if len(soc_response) == 0:
         raise Exception(job + " is not a valid input")
     else:
@@ -37,7 +36,7 @@ def get_soc_code(job):
 
 
 def soc_to_onet(soc):
-    onet_response = api_call('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/', str(soc))
+    onet_response = api_call('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/' + str(soc))
     onet_data = onet_response['onetCodes']
     onet = onet_data[0]['code']
     return onet
@@ -47,19 +46,7 @@ def key(e):
     return e['value']
 
 
-def reverse_search(skills):
-    rev = []
-    rev_response = api_call(
-        'https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100%2C100%2C100&skills=', ",".join(
-            skills))
-    rev_data = rev_response['results']
-    for i in range(len(rev_data)):
-        rev_data2 = rev_data[i]
-        rev.append(rev_data2['likely_soc_codes'][0])
-    return rev
-
-
-def onet_skills(onet, _range):
+def onet_skills(onet, skill_list, _range):
     skills = []
     skills_data_ = []
     skills_response = requests.get('https://api.lmiforall.org.uk/api/v1/o-net/skills/' + str(onet),
@@ -72,12 +59,27 @@ def onet_skills(onet, _range):
         skills_data5 = skills_data4[i]
         skills_data_.append(skills_data5)
         skills.append(skills_data5['id'])
-    a = skill_sort(skills_data_)
+    skill_list = skill_sort(skills_data_, skill_list)
 
-    return a
+    return skill_list
 
 
-def skill_sort(skills):
+def onet_interests(onet, interest, _range):
+    interests_data_ = []
+    interests_response = api_call('https://api.lmiforall.org.uk/api/v1/o-net/interests/' + onet)
+    interests_data = interests_response['scales']
+    interests_data2 = interests_data[1]
+    interests_data3 = interests_data2['interests']
+    interests_data3.sort(reverse=True, key=key)
+    for i in range(_range):
+        interests_data4 = interests_data3[i]
+        interests_data_.append(interests_data4)
+
+    return interests_data_
+
+
+def skill_sort(skills, skill_list):
+    skill_id = get_ids(skill_list)
     for skill in skills:
         if skill_id.count(skill['id']) == 0:
             skill_id.append(skill['id'])
@@ -87,20 +89,40 @@ def skill_sort(skills):
                 if skilll['id'] == skill['id']:
                     skilll['value'] += skill['value']
     skill_list.sort(reverse=True, key=key)
+
+    return skill_list
+
+
+def get_ids(skills):
+    skill_id = []
+    for skill in skills:
+        skill_id.append(skill['id'])
     return skill_id
+
+
+def reverse_search(skills, interests):
+    rev = []
+    rev_response = api_call(
+        'https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100%2C100%2C100&interests=' + ",".join(
+            interests) + '&skills=' + ",".join(skills))
+    rev_data = rev_response['results']
+    for i in range(len(rev_data)):
+        rev_data2 = rev_data[i]
+        rev.append(rev_data2['likely_soc_codes'][0])
+    return rev
 
 
 def find_job(rev, job_num):
     job = []
     for i in range(job_num):
-        job_response = api_call('https://api.lmiforall.org.uk/api/v1/soc/code/', str(rev[i]))
+        job_response = api_call('https://api.lmiforall.org.uk/api/v1/soc/code/' + str(rev[i]))
         job.append(job_response['title'])
     print("Your recommended jobs are ", job)
     return job
 
 
-def api_call(link, var):
-    response = requests.get(link + var, verify=False)
+def api_call(link):
+    response = requests.get(link, verify=False)
     if response.status_code == 200:
         data = response.text
         parse_json = json.loads(data)
@@ -111,20 +133,29 @@ def api_call(link, var):
 
 
 if __name__ == "__main__":
+    skill_list = []
     onet = []
-    skills = []
     top_skills = []
+    top_interests = []
+    skills_for_interests = []
     jobs = get_claimants_jobs()
+    interests = get_claimants_interests()
     try:
         for job in jobs:
             soc = get_soc_code(job)
             onet = (soc_to_onet(soc))
-            skills.append(onet_skills(onet, _range))
+            skill_list.append(onet_skills(onet, skill_list, _range))
+        for interest in interests:
+            soc = get_soc_code(interest)
+            onet = (soc_to_onet(soc))
+            skills_for_interests = (onet_interests(onet, skills_for_interests, interests_range))
     except Exception as e:
         print(e)
 
     for i in range(_range):
         top_skills.append(skill_list[i]['id'])
-    rev = reverse_search(top_skills)
+    for i in range(interests_range):
+        top_interests.append(skills_for_interests[i]['id'])
+    rev = reverse_search(top_skills, top_interests)
     find_job(rev, job_num)
-
+    print(skills_for_interests)
