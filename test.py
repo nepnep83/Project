@@ -5,8 +5,6 @@ from unittest.mock import Mock
 import main
 
 _range = 2
-skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
-skill_id = ['2.A.1.a']
 
 
 class MyTestCase(unittest.TestCase):
@@ -62,56 +60,83 @@ class MyTestCase(unittest.TestCase):
         actual_data = main.key(e)
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('requests.get')
-    def test_reverse_search(self, mocked_request):
-        skills = '1'
-        expected_data = [1115]
-        mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
-                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}',
-                                           status_code=200)
-        actual_data = main.reverse_search(skills)
-        mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
-                                          '%2C100%2C100&skills=1', verify=False)
-        self.assertEqual(expected_data, actual_data)
-
-    @mock.patch("main.skill_list", skill_list)
-    @mock.patch('main.skill_id', skill_id)
     @mock.patch('main.skill_sort')
     @mock.patch('requests.get')
     @mock.patch('requests.models.Response.json')
     def test_onet_skills(self, mocked_json, mocked_request, mocked_sort):
         onet = '1'
         expected_data = ['2.A.1.a', '2.A.1.b']
+        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
         mocked_request.return_value = mocked_json
         mocked_json.json.return_value = {"scales": [{"id": "LV", "skills": [
             {"id": "2.A.1.a", "name": "Reading Comprehension", "value": 4.0},
             {"id": "2.A.1.b", "name": "Active Listening", "value": 3.62}]}]}
         mocked_sort.return_value = ['2.A.1.a', '2.A.1.b']
-        actual_data = main.onet_skills(onet, _range)
+
+        actual_data = main.onet_skills(onet, skill_list, _range)
+
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/skills/1', verify=False)
         mocked_sort.assert_called_with([{"id": "2.A.1.a", "name": "Reading Comprehension", "value": 4.0},
-                                        {"id": "2.A.1.b", "name": "Active Listening", "value": 3.62}])
+                                        {"id": "2.A.1.b", "name": "Active Listening", "value": 3.62}], skill_list)
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch("main.skill_list", [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}])
-    @mock.patch('main.skill_id', ['2.A.1.a'])
+    @mock.patch('main.api_call')
+    def test_onet_interests(self, mock_api):
+        onet = '1'
+        expected_data = [{'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]
+        interest_list = [{'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]
+        mock_api.return_value = {'onetcode': '23-1011.00',
+                                 'scales': [{'id': 'IH', 'interests': [
+                                     {'id': '1.B.1.g', 'name': 'First Interest High-Point', 'value': 5.0}]},
+                                            {'id': 'OI', 'interests': [
+                                                {'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]}]}
+
+        actual_data = main.onet_interests(onet, interest_list, 1)
+
+        mock_api.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/interests/1')
+        self.assertEqual(expected_data, actual_data)
+
     def test_skill_sort(self):
         skill = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 3.0}]
-        expected_data = ['2.A.1.a']
-        actual_data = main.skill_sort(skill)
+        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
+        expected_data = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
+        actual_data = main.skill_sort(skill, skill_list)
         self.assertEqual(expected_data, actual_data)
 
     def test_skill_sort_different_name(self):
         skill = [{'id': '2.A.1.a', 'name': 'writing Comprehension', 'value': 3.0}]
-        expected_data = ['2.A.1.a']
-        actual_data = main.skill_sort(skill)
+        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
+        expected_data = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
+        actual_data = main.skill_sort(skill, skill_list)
         self.assertEqual(expected_data, actual_data)
 
     def test_skill_sort_multiple_skills(self):
+        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
+        skill = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 3.0},
+                 {"id": "2.A.1.b", "name": "Active Listening", "value": 67.62}]
+        expected_data = [{"id": "2.A.1.b", "name": "Active Listening", "value": 67.62},
+                         {'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
+        actual_data = main.skill_sort(skill, skill_list)
+        self.assertEqual(expected_data, actual_data)
+
+    def test_get_ids(self):
         skill = [{'id': '2.A.1.a', 'name': 'writing Comprehension', 'value': 3.0},
                  {"id": "2.A.1.b", "name": "Active Listening", "value": 67.62}]
         expected_data = ['2.A.1.a', '2.A.1.b']
-        actual_data = main.skill_sort(skill)
+        actual_data = main.get_ids(skill)
+        self.assertEqual(expected_data, actual_data)
+
+    @mock.patch('requests.get')
+    def test_reverse_search(self, mocked_request):
+        skills = '1'
+        interests = '1'
+        expected_data = [1115]
+        mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
+                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}',
+                                           status_code=200)
+        actual_data = main.reverse_search(skills, interests)
+        mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
+                                          '%2C100%2C100&interests=1&skills=1', verify=False)
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
@@ -133,11 +158,10 @@ class MyTestCase(unittest.TestCase):
         mocked_request.return_value = Mock(status_code=400)
 
         with self.assertRaises(Exception) as context:
-            main.api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=', 'plumber')
+            main.api_call('https://api.lmiforall.org.uk/api/v1/soc/search?q=' + 'plumber')
 
-        self.assertEquals(expected_data, str(context.exception))
+        self.assertEqual(expected_data, str(context.exception))
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/search?q=plumber', verify=False)
-
 
 
 if __name__ == '__main__':
