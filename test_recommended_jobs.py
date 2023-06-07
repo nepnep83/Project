@@ -4,8 +4,9 @@ from unittest.mock import Mock
 
 import recommend_jobs
 
-
 _range = 2
+interests_range = 1
+job_num = 1
 
 
 class MyTestCase(unittest.TestCase):
@@ -144,6 +145,28 @@ class MyTestCase(unittest.TestCase):
         actual_data = recommend_jobs.find_job(rev, job_num)
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/code/1', verify=False)
+        self.assertEqual(expected_data, actual_data)
+
+    @mock.patch('builtins.input', side_effect=['engineer', 'No', 'engineer'])
+    @mock.patch('recommend_jobs.get_soc_code')
+    @mock.patch('recommend_jobs.soc_to_onet')
+    @mock.patch('recommend_jobs.onet_skills')
+    @mock.patch('recommend_jobs.onet_interests')
+    @mock.patch('recommend_jobs.reverse_search')
+    @mock.patch('recommend_jobs.find_job')
+    def test_run(self, mocked_job, mocked_search, mocked_onet_interests,
+                 mocked_onet_skills, mocked_onet, mocked_soc, Mock):
+        expected_data = ['plumber']
+        mocked_job.return_value = ['plumber']
+        mocked_search.return_value = [1115]
+        mocked_onet_interests.return_value = [{'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]
+        mocked_onet_skills.return_value = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0},
+                                           {'id': '2.A.1.b', 'name': 'Writing Comprehension', 'value': 4.0}]
+        mocked_onet.return_value = '2'
+        mocked_soc.return_value = '1'
+
+        actual_data = recommend_jobs.run(_range, interests_range, job_num)
+
         self.assertEqual(expected_data, actual_data)
 
 

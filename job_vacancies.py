@@ -22,18 +22,18 @@ def find_vacancies(travel_distance, postcode, job):
     return vacancies
 
 
-def run():
-    place_holder_job = 'plumber'
+def run(job, _range):
     distance, location = get_claimant_info()
     # recommended_jobs = get_recommend_jobs()
-    local_jobs = find_vacancies(distance, location, place_holder_job)
+    local_jobs = find_vacancies(distance, location, job)
     # for jobs in local_jobs:
     #   job = local_jobs[jobs]
-    for i in range(job_range):
+    for i in range(_range):
         print(local_jobs[i]['title'])
         print(local_jobs[i]['company'])
         print(local_jobs[i]['link'], '\n')
-
+    return local_jobs
 
 if __name__ == "__main__":
-    run()
+    place_holder_job = 'plumber'
+    run(place_holder_job, job_range)

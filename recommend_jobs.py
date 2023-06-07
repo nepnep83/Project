@@ -2,10 +2,6 @@ import requests
 
 import common
 
-_range = 15
-interests_range = 5
-job_num = 5
-
 
 def get_claimants_jobs():
     jobs = []
@@ -117,7 +113,7 @@ def find_job(rev, job_num):
     return job
 
 
-def run():
+def run(_range, interests_range, job_num):
     skill_list = []
     top_skills = []
     top_interests = []
@@ -127,7 +123,7 @@ def run():
     try:
         for job in jobs:
             soc = get_soc_code(job)
-            onet = (soc_to_onet(soc))
+            onet = soc_to_onet(soc)
             skill_list.append(onet_skills(onet, skill_list, _range))
         for interest in interests:
             soc = get_soc_code(interest)
@@ -145,4 +141,8 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    _range = 15
+    interests_range = 5
+    job_num = 5
+
+    run(_range, interests_range, job_num)
