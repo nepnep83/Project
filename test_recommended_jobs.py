@@ -160,7 +160,7 @@ class MyTestCase(unittest.TestCase):
         mocked_job.return_value = ['plumber']
         mocked_search.return_value = [1115]
         mocked_onet_interests.return_value = [{'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]
-        mocked_onet_skills.return_value = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0},
+        mocked_onet_skills.return_value = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 3.0},
                                            {'id': '2.A.1.b', 'name': 'Writing Comprehension', 'value': 4.0}]
         mocked_onet.return_value = '2'
         mocked_soc.return_value = '1'
