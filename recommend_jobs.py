@@ -118,17 +118,21 @@ def run(_range, interests_range, job_num):
     top_skills = []
     top_interests = []
     skills_for_interests = []
+
     jobs = get_claimants_jobs()
     interests = get_claimants_interests()
     try:
         for job in jobs:
             soc = get_soc_code(job)
             onet = soc_to_onet(soc)
-            skill_list.append(onet_skills(onet, skill_list, _range))
+
+            skills_onet = onet_skills(onet, skill_list.copy(), _range)
+            skill_list.extend(skills_onet)
         for interest in interests:
             soc = get_soc_code(interest)
-            onet = (soc_to_onet(soc))
-            skills_for_interests = (onet_interests(onet, interests_range))
+            onet = soc_to_onet(soc)
+            skills_for_interests = onet_interests(onet, interests_range)
+
     except Exception as e:
         print(e)
     for i in range(_range):

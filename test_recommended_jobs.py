@@ -167,6 +167,12 @@ class MyTestCase(unittest.TestCase):
 
         actual_data = recommend_jobs.run(_range, interests_range, job_num)
 
+        mocked_soc.assert_called_with('engineer')
+        mocked_onet.assert_called_with('1')
+        mocked_onet_skills.assert_called_with('2', [], 2)
+        mocked_onet_interests.assert_called_with('2', 1)
+        mocked_search.assert_called_with(['2.A.1.a', '2.A.1.b'], ['1.B.1.a'])
+        mocked_job.assert_called_with([1115], 1)
         self.assertEqual(expected_data, actual_data)
 
 
