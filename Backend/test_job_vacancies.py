@@ -1,8 +1,7 @@
 import unittest
 from unittest import mock
-from unittest.mock import Mock
 
-import job_vacancies
+from Backend import job_vacancies
 
 job = 'plumber'
 _range = 1
@@ -18,7 +17,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('recommend_jobs.run')
+    @mock.patch('Backend.recommend_jobs.run')
     def test_get_recommended_jobs(self, mocked_recommendation):
         expected_data = 'plumber'
         mocked_recommendation.return_value = 'plumber'
@@ -27,7 +26,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('common.api_call')
+    @mock.patch('Backend.common.api_call')
     def test_find_vacancies(self, mocked_api):
         distance = '1'
         location = '2'
@@ -59,8 +58,8 @@ class MyTestCase(unittest.TestCase):
             "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=1&location=2&keywords=3")
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('job_vacancies.find_vacancies')
-    @mock.patch('job_vacancies.get_claimant_info')
+    @mock.patch('Backend.job_vacancies.find_vacancies')
+    @mock.patch('Backend.job_vacancies.get_claimant_info')
     def test_run(self, mocked_info, mocked_vacancies):
         expected_data = [{'id': 12181272, 'title': 'Plumber', 'summary': "Plumbers", 'company': 'Talent Finder',
                           'activedate': {'start': '2023-05-15T15:31:00Z', 'end': '2023-06-14T15:31:00Z'},

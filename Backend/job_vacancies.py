@@ -1,6 +1,8 @@
-import common
-import recommend_jobs
+from Backend import common
+from Backend import recommend_jobs
 
+_range = 15
+interests_range = 5
 job_range = 5
 
 
@@ -12,7 +14,7 @@ def get_claimant_info():
 
 
 def get_recommend_jobs():
-    jobs = recommend_jobs.run()
+    jobs = recommend_jobs.run(_range, interests_range, job_range)
     return jobs
 
 

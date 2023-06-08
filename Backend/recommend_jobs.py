@@ -1,6 +1,6 @@
 import requests
 
-import common
+from Backend import common
 
 
 def get_claimants_jobs():

@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import Mock
 
-import common
+from Backend import common
 
 
 class MyTestCase(unittest.TestCase):
