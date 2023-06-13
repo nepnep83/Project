@@ -1,1 +1,1 @@
-web: ./build.sh; flask run --log-file -
+web: ./build.sh; flask run
