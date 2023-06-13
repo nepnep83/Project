@@ -1,1 +1,1 @@
-web: ./build.sh; gunicorn govuk-frontend-flask:app --log-file -
+web: ./build.sh; gunicorn govuk-frontend-flask:app --timeout 30
