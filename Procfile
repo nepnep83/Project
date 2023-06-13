@@ -1,1 +1,1 @@
-worker: ./build.sh; flask run
+web: ./build.sh; gunicorn govuk-frontend-flask:app --log-file -
