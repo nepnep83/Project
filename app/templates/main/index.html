@@ -1,48 +1,54 @@
+{% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+{% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
+
 {% extends "base.html" %}
 
 {% block beforeContent %}
 {{ super() }}
 {% endblock %}
 
+
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Hello, World!</h1>
-    <p class="govuk-body-l">This is a template <a href="https://flask.palletsprojects.com" class="govuk-link">Flask</a>
-      app using the <a href="https://frontend.design-system.service.gov.uk/" class="govuk-link">GOV.UK Frontend</a> and
-      <a href="https://design-system.service.gov.uk/" class="govuk-link">GOV.UK Design System</a> which is designed to
-      get a new project started quicker.
-    </p>
-    <button class="govuk-button">This is a button</button>
-    <p class="govuk-body">It is also the reference implementation of two core packages:</p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li><a class="govuk-link" href="https://github.com/LandRegistry/govuk-frontend-jinja">GOV.UK Frontend Jinja</a>
-        which provides Jinja macros of GOV.UK components</li>
-      <li><a class="govuk-link" href="https://github.com/LandRegistry/govuk-frontend-wtf">GOV.UK Frontend WTForms</a>
-        which provides WTForms widgets to integrate the above Jinja macros into form generation and validation</li>
-    </ul>
-    <p class="govuk-body">The app is provided intentionally bare, with just the essential parts that all services need,
-      such as error pages, accessibility statement, cookie banner, cookie page and privacy notice.</p>
+    <h1 class="govuk-heading-l">Your work history</h1>
+    {% set jobHtml %}
 
-    <h2 class="govuk-heading-m">Features</h2>
-    <p class="govuk-body">A number of other packages are used to provide the features listed below with sensible and
-      best-practice defaults:</p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>Asset management</li>
-      <li>Cache busting</li>
-      <li>Form generation and validation</li>
-      <li>Form error handing</li>
-      <li>Flash messages</li>
-      <li>CSRF protection</li>
-      <li>HTTP security headers</li>
-      <li>Content Security Policy (CSP)</li>
-      <li>Response compression</li>
-      <li>Rate limiting</li>
-    </ul>
+      {{ govukInput({
+        'id': "Have-you-worked-previously",
+        'name': "Have-you-worked-previously",
+        'type': "text",
+        'spellcheck': false,
+        'classes': "govuk-!-width-one-third",
+        'label': {
+          'text': "Previous job"
+        }
+      }) }}
+    {% endset -%}
 
-    <h2 class="govuk-heading-m">Documentation</h2>
-    <p class="govuk-body">Detailed documentation on the features listed above and the next steps to start building out your app on top of this template is on <a class="govuk-link"
-        href="https://github.com/LandRegistry/govuk-frontend-flask#readme">GitHub</a></p>
+    {{ govukRadios({
+      'name': "Have-you-worked-previously",
+      'fieldset': {
+        'legend': {
+          'text': "Have you worked previously?",
+          'isPageHeading': true,
+          'classes': "govuk-fieldset__legend--m"
+        }
+      },
+      'items': [
+        {
+          'value': "yes",
+          'text': "Yes",
+          'conditional': {
+            'html':jobHtml
+          }
+        },
+        {
+          'value': "no",
+          'text': "No"
+        }
+      ]
+    }) }}
   </div>
 </div>
 {% endblock %}
