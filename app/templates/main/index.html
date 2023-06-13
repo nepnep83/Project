@@ -1,5 +1,7 @@
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/inset-text/macro.html" import govukInsetText %}
 
 {% extends "base.html" %}
 
@@ -13,15 +15,39 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your work history</h1>
     {% set jobHtml %}
-
-      {{ govukInput({
-        'id': "Have-you-worked-previously",
-        'name': "Have-you-worked-previously",
+    <h2 class="govuk-label--m">Tell us about your previous jobs</h2>
+    <p class="govuk-hint">Your previous work is helpful to know about, even if you do a different type of work now.</p>
+    {{ govukInput({
+      'id': "previous job",
+      'name': "previous job",
+      'type': "text",
+      'spellcheck': false,
+      'classes': "govuk-!-width-one-third",
+      'label': {
+        'text': "Job title",
+        'classes': "govuk-label--m"
+      }
+    }) }}
+    {{ govukInput({
+        'id': "previous job 2",
+        'name': "previous job 2",
         'type': "text",
         'spellcheck': false,
         'classes': "govuk-!-width-one-third",
         'label': {
-          'text': "Previous job"
+          'text': "Job title 2",
+          'classes': "govuk-label--m"
+        }
+      }) }}
+    {{ govukInput({
+        'id': "previous job 3",
+        'name': "previous job 3",
+        'type': "text",
+        'spellcheck': false,
+        'classes': "govuk-!-width-one-third",
+        'label': {
+          'text': "Job title 3",
+          'classes': "govuk-label--m"
         }
       }) }}
     {% endset -%}
@@ -48,6 +74,9 @@
           'text': "No"
         }
       ]
+    }) }}
+    {{ govukButton({
+      'text': "Save and continue"
     }) }}
   </div>
 </div>
