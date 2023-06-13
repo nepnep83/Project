@@ -1,1 +1,1 @@
-web: ./build.sh; flask run
+worker: ./build.sh; flask run
