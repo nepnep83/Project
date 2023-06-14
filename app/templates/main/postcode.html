@@ -1,0 +1,53 @@
+{% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+
+{% extends "base.html" %}
+
+{% block beforeContent %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+{{ govukBreadcrumbs({
+  'collapseOnMobile': true,
+  'items': [
+    {
+      'text': "Work history",
+      'href': "/"
+    },
+    {
+      'text': "Preferred jobs",
+      'href': "/preferred"
+    },
+    {
+      'text': "Postcode",
+      'href': '/postcode'
+    }
+  ]
+}) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Your postcode</h1>
+
+    {{ govukInput({
+      'id': "postcode",
+      'name': "postcode",
+      'type': "text",
+      'spellcheck': false,
+      'classes': "govuk-!-width-one-third",
+      'label': {
+        'text': "What is your postcode?",
+        'classes': "govuk-label--m"
+      }
+    }) }}
+
+    {{ govukButton({
+      'text': "Save and continue",
+      'href': "/summary"
+    }) }}
+
+  </div>
+</div>
+{% endblock %}

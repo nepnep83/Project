@@ -1,6 +1,3 @@
-import os
-import uuid
-
 from flask import Flask, render_template, request, redirect, url_for, session
 import csv
 from flask_wtf.csrf import CSRFError
@@ -9,14 +6,33 @@ from werkzeug.exceptions import HTTPException
 from app.main import bp
 from app.main.forms import CookiesForm
 
-app = Flask(__name__)
 user_info = "user_info"
 user_account = "user_account"
 
 
-@bp.route("/")
+@bp.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
+
+
+@bp.route("/preferred")
+def preferred():
+    return render_template("preferred.html")
+
+
+@bp.route("/postcode")
+def postcode():
+    return render_template("postcode.html")
+
+
+@bp.route("/summary")
+def summary():
+    return render_template("summary.html")
+
+
+@bp.route("/recommendation")
+def recommendation():
+    return render_template("recommendation.html")
 
 
 @bp.route("/cookies", methods=["GET", "POST"])

@@ -1,0 +1,98 @@
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
+{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+
+{% extends "base.html" %}
+
+{% block beforeContent %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+{{ govukBreadcrumbs({
+  'collapseOnMobile': true,
+  'items': [
+    {
+      'text': "Work history",
+      'href': "/"
+    },
+    {
+      'text': "Preferred jobs",
+      'href': "/preferred"
+    },
+    {
+      'text': "Postcode",
+      'href': '/postcode'
+    },
+    {
+      'text': "Summary",
+      'href': '/summary'
+    },
+    {
+      'text': "Recommended jobs",
+      'href': '/recommended'
+    }
+  ]
+}) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Your recommended jobs</h1>
+
+    {{ govukSummaryList({
+      'rows': [
+        {
+          'key': {
+            'text': "Job title"
+          },
+          'key': {
+            'text': "Description"
+          },
+          'key': {
+            'text': "link"
+          },
+        },
+        {
+          'value': {
+            'text': "job"
+          },
+          'value': {
+            'text': "description"
+          },
+          'actions': {
+            'items': [
+              {
+                'href': "/",
+                'text': "Link to job",
+                'visuallyHiddenText': "previous"
+              }
+            ]
+          }
+        },
+        {
+          'value': {
+            'text': "job 2"
+          },
+          'value': {
+            'text': "description 2"
+          },
+          'actions': {
+            'items': [
+              {
+                'href': "/",
+                'text': "Link to job 2",
+                'visuallyHiddenText': "previous"
+              }
+            ]
+          }
+        },
+      ]
+    }) }}
+
+    {{ govukButton({
+      'text': "Save and continue"
+    }) }}
+
+  </div>
+</div>
+{% endblock %}
