@@ -1,3 +1,5 @@
+import uuid
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import json
 import csv
@@ -8,23 +10,32 @@ from app.main.forms import CookiesForm, BankDetailsForm
 
 user_info = "user_info"
 user_account = "user_account"
-test = "2"
+
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
     form = BankDetailsForm()
     if form.validate_on_submit():
-        return redirect(url_for("main.preferred").join("?"+form.job_title))
+        store_data(form.job_title)
+        return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
 
 @bp.route("/preferred")
 def preferred():
+    form = BankDetailsForm()
+    if form.validate_on_submit():
+        store_data(form.pref_job)
+        return redirect(url_for("main.postcode"))
     return render_template("preferred.html")
 
 
 @bp.route("/postcode")
 def postcode():
+    form = BankDetailsForm()
+    if form.validate_on_submit():
+        store_data(form.postcode)
+        return redirect(url_for("main.summary"))
     return render_template("postcode.html")
 
 
@@ -71,11 +82,11 @@ def cookies():
     return render_template("cookies.html", form=form)
 
 
-def save_user_info(data, job):
-    with open(user_info, 'a', newline="") as csvfile:
-        fieldnames = ['email', 'username', '_id']
-        writer = csv.DictWriter(csvfile, fieldnames)
-        writer.writeheader()
+def store_data(info):
+    ident = str(uuid.uuid4())
+    session['id'] = ident
+    print(session['id'])
+
 
 
 if __name__ == "__main__":

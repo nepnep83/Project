@@ -17,6 +17,18 @@
       'text': "Work history",
       'href': "/"
     },
+    <form action="" method="post" novalidate>
+      {{ form.csrf_token }}
+
+      {{ form.pref_job(params={
+        'classes': 'govuk-input--width-5',
+        'inputmode': 'numeric',
+        'pattern': '[0-9]*',
+        'spellcheck': false
+      }) }}
+
+      {{ form.submit }}
+    </form>
     {
       'text': "Preferred jobs",
       'href': "/preferred"
