@@ -5,6 +5,8 @@
 
 {% extends "base.html" %}
 
+{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Bank details – GOV.UK{% endblock %}
+
 {% block beforeContent %}
 {{ super() }}
 {% endblock %}
@@ -20,13 +22,41 @@
     }
   ]
 }) }}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your work history</h1>
     {% set jobHtml %}
     <h2 class="govuk-label--m">Tell us about your previous jobs</h2>
     <p class="govuk-hint">Your previous work is helpful to know about, even if you do a different type of work now.</p>
-    <form action="{{ url_for('main.index')}}" method="post">
+      <form action="" method="post" novalidate>
+      {{ form.csrf_token }}
+
+      {{ form.job_title(params={
+        'spellcheck': false
+      }) }}
+
+      {{ form.sort_code(params={
+        'classes': 'govuk-input--width-5',
+        'inputmode': 'numeric',
+        'pattern': '[0-9]*',
+        'spellcheck': false
+      }) }}
+
+      {{ form.account_number(params={
+        'classes': 'govuk-input--width-10',
+        'inputmode': 'numeric',
+        'pattern': '[0-9]*',
+        'spellcheck': false
+      }) }}
+
+      {{ form.roll_number(params={
+        'classes': 'govuk-input--width-10',
+        'spellcheck': false
+      }) }}
+
+      {{ form.submit }}
+    </form>
     {{ govukInput({
       'id': "previous job",
       'name': "previous job",
@@ -38,7 +68,6 @@
         'classes': "govuk-label--m"
       }
     }) }}
-      </form>
       <a class="govuk-link" href="#">Remove</a>
     {{ govukInput({
         'id': "previous job 2",

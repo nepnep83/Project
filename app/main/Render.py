@@ -1,18 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+import json
 import csv
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
-
 from app.main import bp
-from app.main.forms import CookiesForm
+from app.main.forms import CookiesForm, BankDetailsForm
 
 user_info = "user_info"
 user_account = "user_account"
-
+test = "2"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
+    form = BankDetailsForm()
+    if form.validate_on_submit():
+        return redirect(url_for("main.preferred").join("?"+form.job_title))
+    return render_template("index.html", form=form)
 
 
 @bp.route("/preferred")
@@ -67,6 +70,12 @@ def cookies():
             form.analytics.data = cookies_policy["analytics"]
     return render_template("cookies.html", form=form)
 
+
+def save_user_info(data, job):
+    with open(user_info, 'a', newline="") as csvfile:
+        fieldnames = ['email', 'username', '_id']
+        writer = csv.DictWriter(csvfile, fieldnames)
+        writer.writeheader()
 
 
 if __name__ == "__main__":
