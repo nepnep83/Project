@@ -26,37 +26,18 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your work history</h1>
+    <form action="/preferred" method="post" novalidate>
+
     {% set jobHtml %}
     <h2 class="govuk-label--m">Tell us about your previous jobs</h2>
     <p class="govuk-hint">Your previous work is helpful to know about, even if you do a different type of work now.</p>
-      <form action="" method="post" novalidate>
+
       {{ form.csrf_token }}
 
       {{ form.job_title(params={
         'spellcheck': false
       }) }}
 
-      {{ form.pref_job(params={
-        'classes': 'govuk-input--width-5',
-        'inputmode': 'numeric',
-        'pattern': '[0-9]*',
-        'spellcheck': false
-      }) }}
-
-      {{ form.account_number(params={
-        'classes': 'govuk-input--width-10',
-        'inputmode': 'numeric',
-        'pattern': '[0-9]*',
-        'spellcheck': false
-      }) }}
-
-      {{ form.roll_number(params={
-        'classes': 'govuk-input--width-10',
-        'spellcheck': false
-      }) }}
-
-      {{ form.submit }}
-    </form>
     {{ govukInput({
       'id': "previous job",
       'name': "previous job",
@@ -69,30 +50,7 @@
       }
     }) }}
       <a class="govuk-link" href="#">Remove</a>
-    {{ govukInput({
-        'id': "previous job 2",
-        'name': "previous job 2",
-        'type': "text",
-        'spellcheck': false,
-        'classes': "govuk-!-width-one-third",
-        'label': {
-          'text': "Job title 2",
-          'classes': "govuk-label--m"
-        }
-      }) }}
-      <a class="govuk-link" href="#">Remove</a>
-    {{ govukInput({
-        'id': "previous job 3",
-        'name': "previous job 3",
-        'type': "text",
-        'spellcheck': false,
-        'classes': "govuk-!-width-one-third",
-        'label': {
-          'text': "Job title 3",
-          'classes': "govuk-label--m"
-        }
-      }) }}
-      <a class="govuk-link" href="#">Remove</a>
+
     {% endset -%}
 
     {{ govukRadios({
@@ -118,10 +76,10 @@
         }
       ]
     }) }}
-    {{ govukButton({
-      'text': "Save and continue",
-      'href': "/preferred"
-    }) }}
+      {{ form.submit }}
+
+
+    </form>
   </div>
 </div>
 {% endblock %}

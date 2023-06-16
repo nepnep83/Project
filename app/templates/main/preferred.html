@@ -5,6 +5,8 @@
 
 {% extends "base.html" %}
 
+{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Bank details – GOV.UK{% endblock %}
+
 {% block beforeContent %}
 {{ super() }}
 {% endblock %}
@@ -24,22 +26,21 @@
     }
   ]
 }) }}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
+    <form action="/postcode" method="post" novalidate>
     <h1 class="govuk-heading-l">Your preferred jobs</h1>
     <p class="govuk-body">We want to know if there are specific jobs or types of work you're interested in, even if you think you do not have the necessary skills and experience right now.</p>
     {% set jobHtml %}
-    {{ govukInput({
-      'id': "preferred job",
-      'name': "preferred job",
-      'type': "text",
-      'spellcheck': false,
-      'classes': "govuk-!-width-one-third",
-      'label': {
-        'text': "Job",
-        'classes': "govuk-label--m"
-      }
-    }) }}
+      {{ form.csrf_token }}
+
+      {{ form.pref_job(params={
+          'classes': 'govuk-input--width-5',
+          'inputmode': 'numeric',
+          'pattern': '[0-9]*',
+          'spellcheck': false
+        }) }}
 
     {% endset -%}
 
@@ -66,10 +67,9 @@
         }
       ]
     }) }}
-    {{ govukButton({
-      'text': "Save and continue",
-      'href': "/postcode"
-    }) }}
+    {{ form.submit }}
+
+    </form>
   </div>
 </div>
 {% endblock %}

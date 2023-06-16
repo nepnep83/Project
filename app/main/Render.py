@@ -6,7 +6,7 @@ import csv
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
 from app.main import bp
-from app.main.forms import CookiesForm, BankDetailsForm
+from app.main.forms import CookiesForm, JobFinder
 
 user_info = "user_info"
 user_account = "user_account"
@@ -14,37 +14,37 @@ user_account = "user_account"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
-    form = BankDetailsForm()
+    form = JobFinder()
     if form.validate_on_submit():
         store_data(form.job_title)
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
 
-@bp.route("/preferred")
+@bp.route("/preferred", methods=["GET", "POST"])
 def preferred():
-    form = BankDetailsForm()
+    form = JobFinder()
     if form.validate_on_submit():
         store_data(form.pref_job)
         return redirect(url_for("main.postcode"))
-    return render_template("preferred.html")
+    return render_template("preferred.html", form=form)
 
 
-@bp.route("/postcode")
+@bp.route("/postcode", methods=["GET", "POST"])
 def postcode():
-    form = BankDetailsForm()
+    form = JobFinder()
     if form.validate_on_submit():
         store_data(form.postcode)
         return redirect(url_for("main.summary"))
-    return render_template("postcode.html")
+    return render_template("postcode.html", form=form)
 
 
-@bp.route("/summary")
+@bp.route("/summary", methods=["GET", "POST"])
 def summary():
     return render_template("summary.html")
 
 
-@bp.route("/recommendation")
+@bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
     return render_template("recommendation.html")
 
