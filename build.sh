@@ -32,3 +32,8 @@ find govuk_components -type f ! -name 'fixtures.json' -delete
 # Tidy up
 rm -rf govuk_frontend_source
 rm -rf govuk_frontend_source.zip
+
+while read -r line
+do
+    eval "heroku config:set $line"
+done < .flaskenv
