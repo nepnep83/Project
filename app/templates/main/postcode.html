@@ -1,0 +1,58 @@
+{% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+
+{% extends "base.html" %}
+
+{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Bank details – GOV.UK{% endblock %}
+
+{% block beforeContent %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+{{ govukBreadcrumbs({
+  'collapseOnMobile': true,
+  'items': [
+    {
+      'text': "Work history",
+      'href': "/"
+    },
+    {
+      'text': "Preferred jobs",
+      'href': "/preferred"
+    },
+    {
+      'text': "Postcode",
+      'href': '/postcode'
+    }
+  ]
+}) }}
+
+<form action="" method="post" novalidate>
+      {{ form.csrf_token }}
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Your postcode</h1>
+
+    {{ form.postcode(params={
+      'id': "postcode",
+      'name': "postcode",
+      'type': "text",
+      'spellcheck': false,
+      'classes': "govuk-!-width-one-third",
+      'label': {
+        'text': "What is your current postcode?",
+        'classes': "govuk-label--m"
+      }
+      }) }}
+
+    {{ form.submit }}
+
+  </div>
+</div>
+</form>
+{% endblock %}

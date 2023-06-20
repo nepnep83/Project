@@ -1,0 +1,75 @@
+{% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+{% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+
+{% extends "base.html" %}
+
+{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Bank details – GOV.UK{% endblock %}
+
+{% block beforeContent %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+{{ govukBreadcrumbs({
+  'collapseOnMobile': true,
+  'items': [
+    {
+      'text': "Work history",
+      'href': "/"
+    },
+    {
+      'text': "Preferred jobs",
+      'href': "/preferred"
+    }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form action="" method="post" novalidate>
+    <h1 class="govuk-heading-l">Your preferred jobs</h1>
+    <p class="govuk-body">We want to know if there are specific jobs or types of work you're interested in, even if you think you do not have the necessary skills and experience right now.</p>
+    {% set jobHtml %}
+      {{ form.csrf_token }}
+
+      {{ form.pref_job(params={
+          'classes': 'govuk-input--width-5',
+          'inputmode': 'numeric',
+          'pattern': '[0-9]*',
+          'spellcheck': false
+        }) }}
+
+    {% endset -%}
+
+    {{ govukRadios({
+      'name': "preferred",
+      'fieldset': {
+        'legend': {
+          'text': "Do you know what you'd like to do now or in the near future?",
+          'isPageHeading': true,
+          'classes': "govuk-fieldset__legend--m"
+        }
+      },
+      'items': [
+        {
+          'value': "yes",
+          'text': "Yes",
+          'conditional': {
+            'html':jobHtml
+          }
+        },
+        {
+          'value': "no",
+          'text': "No"
+        }
+      ]
+    }) }}
+    {{ form.submit }}
+
+    </form>
+  </div>
+</div>
+{% endblock %}

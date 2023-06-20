@@ -1,7 +1,7 @@
 from Backend import common
 from Backend import recommend_jobs
 
-_range = 15
+_range = 10
 interests_range = 5
 job_range = 5
 

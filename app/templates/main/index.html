@@ -1,0 +1,76 @@
+{% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+{% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+
+{% extends "base.html" %}
+
+{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Bank details – GOV.UK{% endblock %}
+
+{% block beforeContent %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+{{ govukBreadcrumbs({
+  'collapseOnMobile': true,
+  'items': [
+    {
+      'text': "Work history",
+      'href': "/"
+    }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Your work history</h1>
+    <form action="" method="post" novalidate>
+
+    {% set jobHtml %}
+    <h2 class="govuk-label--m">Tell us about your previous jobs</h2>
+    <p class="govuk-hint">Your previous work is helpful to know about, even if you do a different type of work now.</p>
+
+      {{ form.csrf_token }}
+
+      {{ form.job_title(params={
+        'spellcheck': false,
+        'classes': "govuk-input--width-10"
+      }) }}
+
+
+      <a class="govuk-link" href="#">Remove</a>
+
+    {% endset -%}
+
+    {{ govukRadios({
+      'name': "Have-you-worked-previously",
+      'fieldset': {
+        'legend': {
+          'text': "Have you worked previously?",
+          'isPageHeading': true,
+          'classes': "govuk-fieldset__legend--m"
+        }
+      },
+      'items': [
+        {
+          'value': "yes",
+          'text': "Yes",
+          'conditional': {
+            'html':jobHtml
+          }
+        },
+        {
+          'value': "no",
+          'text': "No"
+        }
+      ]
+    }) }}
+      {{ form.submit }}
+
+
+    </form>
+  </div>
+</div>
+{% endblock %}

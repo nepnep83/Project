@@ -1,0 +1,101 @@
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
+{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+
+{% extends "base.html" %}
+
+{% block beforeContent %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+{{ govukBreadcrumbs({
+  'collapseOnMobile': true,
+  'items': [
+    {
+      'text': "Work history",
+      'href': "/"
+    },
+    {
+      'text': "Preferred jobs",
+      'href': "/preferred"
+    },
+    {
+      'text': "Postcode",
+      'href': '/postcode'
+    },
+    {
+      'text': "Summary",
+      'href': '/summary'
+    }
+  ]
+}) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Help us understand your work situation: check your answers</h1>
+
+    {{ govukSummaryList({
+      'rows': [
+        {
+          'key': {
+            'text': "Your work history"
+          },
+          'value': {
+            'text': job_title
+          },
+          'actions': {
+            'items': [
+              {
+                'href': "/",
+                'text': "Change",
+                'visuallyHiddenText': "previous"
+              }
+            ]
+          }
+        },
+        {
+          'key': {
+            'text': "Your preferred jobs"
+          },
+          'value': {
+            'text': pref_job
+          },
+          'actions': {
+            'items': [
+              {
+                'href': "/preferred",
+                'text': "Change",
+                'visuallyHiddenText': "preferred"
+              }
+            ]
+          }
+        },
+        {
+          'key': {
+            'text': "Your postcode"
+          },
+          'value': {
+            'text': postcode
+          },
+          'actions': {
+            'items': [
+              {
+                'href': "/postcode",
+                'text': "Change",
+                'visuallyHiddenText': "postcode"
+              }
+            ]
+          }
+        },
+      ]
+    }) }}
+
+    {{ govukButton({
+      'text': "Save and continue",
+      'href': "/recommendation"
+    }) }}
+
+  </div>
+</div>
+{% endblock %}
