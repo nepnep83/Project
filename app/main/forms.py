@@ -4,22 +4,26 @@ from wtforms.fields import RadioField, SubmitField, StringField
 from wtforms.validators import InputRequired, Regexp, Length, Optional
 
 
-class JobFinder(FlaskForm):
+class JobTitle(FlaskForm):
     job_title = StringField(
         "Job title",
         widget=GovTextInput(),
-        validators=[InputRequired(message="Enter your job title")],
     )
+    submit = SubmitField("Continue", widget=GovSubmitInput())
+
+
+class PrefJob(FlaskForm):
     pref_job = StringField(
         "Job",
         widget=GovTextInput(),
-        validators=[InputRequired(message="Enter your preferred job title")],
     )
+    submit = SubmitField("Continue", widget=GovSubmitInput())
+
+
+class Postcode(FlaskForm):
     postcode = StringField(
         "postcode",
         widget=GovTextInput(),
-        validators=[
-            InputRequired(message="Enter a postcode")],
     )
     submit = SubmitField("Continue", widget=GovSubmitInput())
 

@@ -6,7 +6,7 @@ import csv
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
 from app.main import bp
-from app.main.forms import CookiesForm, JobFinder
+from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
 user_info = "user_info"
 user_account = "user_account"
@@ -14,34 +14,36 @@ user_account = "user_account"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
-    form = JobFinder()
+    form = JobTitle()
     if form.validate_on_submit():
-        store_data(form.job_title)
+        session['job_title'] = form.job_title.data
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
 
 @bp.route("/preferred", methods=["GET", "POST"])
 def preferred():
-    form = JobFinder()
+    form = PrefJob()
     if form.validate_on_submit():
-        store_data(form.pref_job)
+        session['pref_job'] = form.pref_job.data
         return redirect(url_for("main.postcode"))
     return render_template("preferred.html", form=form)
 
 
 @bp.route("/postcode", methods=["GET", "POST"])
 def postcode():
-    form = JobFinder()
+    form = Postcode()
     if form.validate_on_submit():
-        store_data(form.postcode)
+        session['postcode'] = form.postcode.data
         return redirect(url_for("main.summary"))
     return render_template("postcode.html", form=form)
 
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    return render_template("summary.html")
+    print(session)
+    return render_template("summary.html", job_title=session['job_title'], pref_job=session['pref_job'],
+                           postcode=session['postcode'])
 
 
 @bp.route("/recommendation", methods=["GET", "POST"])
@@ -86,12 +88,3 @@ def store_data(info):
     ident = str(uuid.uuid4())
     session['id'] = ident
     print(session['id'])
-
-
-
-if __name__ == "__main__":
-    app.secret_key = 'super secret key'
-    app.config['SESSION_TYPE'] = 'filesystem'
-
-    app.debug = True
-    app.run()

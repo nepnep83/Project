@@ -26,7 +26,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your work history</h1>
-    <form action="/preferred" method="post" novalidate>
+    <form action="" method="post" novalidate>
 
     {% set jobHtml %}
     <h2 class="govuk-label--m">Tell us about your previous jobs</h2>
@@ -35,20 +35,11 @@
       {{ form.csrf_token }}
 
       {{ form.job_title(params={
-        'spellcheck': false
+        'spellcheck': false,
+        'classes': "govuk-input--width-10"
       }) }}
 
-    {{ govukInput({
-      'id': "previous job",
-      'name': "previous job",
-      'type': "text",
-      'spellcheck': false,
-      'classes': "govuk-!-width-one-third",
-      'label': {
-        'text': "Job title",
-        'classes': "govuk-label--m"
-      }
-    }) }}
+
       <a class="govuk-link" href="#">Remove</a>
 
     {% endset -%}
