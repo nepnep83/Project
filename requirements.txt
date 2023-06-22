@@ -4,7 +4,6 @@
 #
 #    pip-compile
 #
---index-url https://nexus3.ucds.io/repository/pypy-proxy/simple
 async-timeout==4.0.2
     # via redis
 blinker==1.6.2
