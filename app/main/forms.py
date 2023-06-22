@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovRadioInput, GovSubmitInput, GovTextInput
 from wtforms.fields import RadioField, SubmitField, StringField
 from wtforms.validators import InputRequired, Regexp, Length, Optional
-from app.main.custom_validators import RequiredIf, ConditionalValidation
+from app.main.custom_validators import ConditionalValidation
 
 
 class JobTitle(FlaskForm):
