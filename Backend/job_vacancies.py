@@ -19,9 +19,6 @@ def get_recommend_jobs(jobs, interest):
 
 
 def find_vacancies(travel_distance, postcode, job):
-    print(type(travel_distance))
-    print(type(postcode))
-    print(type(job[0]))
     vacancies = common.api_call(
         "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=" + str(travel_distance) + "&location=" + postcode + "&keywords=" + job[0])
     return vacancies
