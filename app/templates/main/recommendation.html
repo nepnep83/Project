@@ -1,93 +1,75 @@
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
-{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+{%- from 'govuk_frontend_jinja/components/back-link/macro.html' import govukBackLink -%}
+{%- from 'govuk_frontend_jinja/components/table/macro.html' import govukTable -%}
 
 {% extends "base.html" %}
 
 {% block beforeContent %}
-{{ super() }}
+  {{ super() }}
+  {{ govukBackLink({
+    'text': "Back",
+    'href': url_for('main.summary')
+  }) }}
 {% endblock %}
 
 
 {% block content %}
-{{ govukBreadcrumbs({
-  'collapseOnMobile': true,
-  'items': [
-    {
-      'text': "Work history",
-      'href': "/"
-    },
-    {
-      'text': "Preferred jobs",
-      'href': "/preferred"
-    },
-    {
-      'text': "Postcode",
-      'href': '/postcode'
-    },
-    {
-      'text': "Summary",
-      'href': '/summary'
-    },
-    {
-      'text': "Recommended jobs",
-      'href': '/recommended'
-    }
-  ]
-}) }}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your recommended jobs</h1>
+    <!--{{ govukTable(
+      {
+        'head': [{'text': 'Job title',"rowspan": 1,
+                        "colspan": 1}, {'text': 'Description',"rowspan": 1,
+                        "colspan": 2}, {'text': 'Link',"rowspan": 1,
+                        "colspan": 3}],
+        'rows': [
+          [{'text': job1,"rowspan": 1,
+                        "colspan": 1}, {'text': desc1, "rowspan": 1,
+                        "colspan": 2}, {'text': 'link1',"rowspan": 1,
+                        "colspan": 3}],
 
+          [{'text': job2,"rowspan": 2,
+                        "colspan": 1}, {'text': desc2, "rowspan": 2,
+                        "colspan": 2}, {'text': link2, 'text': 'Job 2',"rowspan": 2,
+                        "colspan": 3}]
+        ]
+      }
+    )}}-->
     {{ govukSummaryList({
       'rows': [
         {
           'key': {
-            'text': "Job title"
+            'text': job1
           },
           'value': {
-            'text': "Description"
+            'text': desc1
           },
           'actions': {
             'items': [
               {
-                'href': "/",
-                'text': "Link to job",
-                'visuallyHiddenText': "previous"
+                'href': link1,
+                'text': 'Job 1',
+                'visuallyHiddenText': job1+" link"
               }
             ]
           }
         },
         {
           'key': {
-            'text': "job"
+            'text': job2
           },
           'value': {
-            'text': "description"
+            'text': desc2
           },
           'actions': {
             'items': [
               {
-                'href': "/",
-                'text': "Link to job",
-                'visuallyHiddenText': "previous"
-              }
-            ]
-          }
-        },
-        {
-          'key': {
-            'text': "job 2"
-          },
-          'value': {
-            'text': "description 2"
-          },
-          'actions': {
-            'items': [
-              {
-                'href': "/",
-                'text': "Link to job 2",
-                'visuallyHiddenText': "previous"
+                'href': link2,
+                'text': "Job 2",
+                'visuallyHiddenText': job2+"link"
               }
             ]
           }

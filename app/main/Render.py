@@ -8,6 +8,8 @@ from werkzeug.exceptions import HTTPException
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
+from Backend import recommend_jobs, job_vacancies
+
 user_info = "user_info"
 user_account = "user_account"
 
@@ -41,14 +43,25 @@ def postcode():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    print(session)
+    jobs = [session['job_title']]
+    interest = [session['pref_job']]
+    postcode = session['postcode']
+    data = job_vacancies.run(jobs, interest, 10, postcode, 5)
+    session['recommend_job_title1'] = data[0]['title']
+    session['recommend_job_summary1'] = data[0]['summary']
+    session['recommend_job_link1'] = data[0]['link']
+    session['recommend_job_title2'] = data[1]['title']
+    session['recommend_job_summary2'] = data[1]['summary']
+    session['recommend_job_link2'] = data[1]['link']
     return render_template("summary.html", job_title=session['job_title'], pref_job=session['pref_job'],
                            postcode=session['postcode'])
 
 
 @bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
-    return render_template("recommendation.html")
+    return render_template("recommendation.html", job1=session['recommend_job_title1'],
+                           desc1=session['recommend_job_summary1'], link1=session['recommend_job_link1'], job2=session['recommend_job_title2'],
+                           desc2=session['recommend_job_summary2'], link2=session['recommend_job_link2'])
 
 
 @bp.route("/cookies", methods=["GET", "POST"])
