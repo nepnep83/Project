@@ -1,4 +1,4 @@
-requests==2.7.0
+requests==2.31.0
 cssmin==0.2.0
 email_validator==2.0.0.post2
 flask-assets==2.0
