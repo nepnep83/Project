@@ -113,14 +113,12 @@ def find_job(rev, job_num):
     return job
 
 
-def run(_range, interests_range, job_num):
+def run(jobs, interests, _range, interests_range, job_num):
     skill_list = []
     top_skills = []
     top_interests = []
     skills_for_interests = []
 
-    jobs = get_claimants_jobs()
-    interests = get_claimants_interests()
     try:
         for job in jobs:
             soc = get_soc_code(job)
@@ -149,4 +147,7 @@ if __name__ == "__main__":
     interests_range = 5
     job_num = 5
 
-    run(_range, interests_range, job_num)
+    jobs = get_claimants_jobs()
+    interests = get_claimants_interests()
+
+    run(jobs, interests, _range, interests_range, job_num)

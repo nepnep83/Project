@@ -4,7 +4,10 @@ from unittest import mock
 from Backend import job_vacancies
 
 job = 'plumber'
+interest = 'engineer'
 _range = 1
+place_holder_distance = '10'
+place_holder_location = 'da1'
 expected_data_1 = [{'id': 12181272, 'title': 'Plumber', 'summary': "Plumbers", 'company': 'Talent Finder',
                           'activedate': {'start': '2023-05-15T15:31:00Z', 'end': '2023-06-14T15:31:00Z'},
                           'location': {'location': 'BR1 3NN', 'city': '', 'area': '', 'postcode': '', 'country': ''},
@@ -26,7 +29,7 @@ class MyTestCase(unittest.TestCase):
         expected_data = 'plumber'
         mocked_recommendation.return_value = 'plumber'
 
-        actual_data = job_vacancies.get_recommend_jobs()
+        actual_data = job_vacancies.get_recommend_jobs(job, interest)
 
         self.assertEqual(expected_data, actual_data)
 
@@ -49,17 +52,17 @@ class MyTestCase(unittest.TestCase):
     @mock.patch('Backend.job_vacancies.find_vacancies')
     @mock.patch('Backend.job_vacancies.get_claimant_info')
     def test_run(self, mocked_info, mocked_vacancies):
-        mocked_info.return_value = [10, 'da1']
+        mocked_info.return_value = ['10', 'da1']
         mocked_vacancies.return_value = [
             {'id': 12181272, 'title': 'Plumber', 'summary': "Plumbers", 'company': 'Talent Finder',
              'activedate': {'start': '2023-05-15T15:31:00Z', 'end': '2023-06-14T15:31:00Z'},
              'location': {'location': 'BR1 3NN', 'city': '', 'area': '', 'postcode': '', 'country': ''},
              'link': 'https://findajob.dwp.gov.uk/details/12181272'}]
 
-        actual_data = job_vacancies.run(job, _range)
+        actual_data = job_vacancies.run(job, interest, place_holder_distance, place_holder_location, _range)
 
         self.assertEqual(expected_data_1, actual_data)
-        mocked_vacancies.assert_called_with(10, 'da1', 'plumber')
+        mocked_vacancies.assert_called_with('10', 'da1', 'plumber')
 
 
 if __name__ == '__main__':

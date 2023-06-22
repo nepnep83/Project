@@ -7,7 +7,8 @@ from Backend import recommend_jobs
 _range = 2
 interests_range = 1
 job_num = 1
-job = 'plumber'
+job = ['plumber']
+interest = ['engineer']
 onet_1 = "53-6041.00"
 skill_1 = {'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 3.0}
 skill_2 = {'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}
@@ -40,7 +41,7 @@ class MyTestCase(unittest.TestCase):
         expected_data = 3113
         mocked_request.return_value = Mock(text='[{"soc":3113}]', status_code=200)
 
-        actual_data = recommend_jobs.get_soc_code(job)
+        actual_data = recommend_jobs.get_soc_code(job[0])
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/search?q=plumber', verify=False)
         self.assertEqual(expected_data, actual_data)
@@ -163,7 +164,6 @@ class MyTestCase(unittest.TestCase):
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/code/1', verify=False)
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('builtins.input', side_effect=['engineer', 'No', 'engineer'])
     @mock.patch('Backend.recommend_jobs.get_soc_code')
     @mock.patch('Backend.recommend_jobs.soc_to_onet')
     @mock.patch('Backend.recommend_jobs.onet_skills')
@@ -171,7 +171,8 @@ class MyTestCase(unittest.TestCase):
     @mock.patch('Backend.recommend_jobs.reverse_search')
     @mock.patch('Backend.recommend_jobs.find_job')
     def test_run(self, mocked_job, mocked_search, mocked_onet_interests,
-                 mocked_onet_skills, mocked_onet, mocked_soc, Mock):
+                 mocked_onet_skills, mocked_onet, mocked_soc):
+
         expected_data = [job]
         mocked_job.return_value = [job]
         mocked_search.return_value = [1115]
@@ -180,7 +181,7 @@ class MyTestCase(unittest.TestCase):
         mocked_onet.return_value = '2'
         mocked_soc.return_value = '1'
 
-        actual_data = recommend_jobs.run(_range, interests_range, job_num)
+        actual_data = recommend_jobs.run(job, interest, _range, interests_range, job_num)
 
         mocked_soc.assert_called_with('engineer')
         mocked_onet.assert_called_with('1')

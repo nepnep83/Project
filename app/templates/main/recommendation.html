@@ -1,44 +1,33 @@
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
-{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+{%- from 'govuk_frontend_jinja/components/back-link/macro.html' import govukBackLink -%}
+{%- from 'govuk_frontend_jinja/components/table/macro.html' import govukTable -%}
 
 {% extends "base.html" %}
 
 {% block beforeContent %}
-{{ super() }}
+  {{ super() }}
+  {{ govukBackLink({
+    'text': "Back",
+    'href': url_for('main.summary')
+  }) }}
 {% endblock %}
 
 
 {% block content %}
-{{ govukBreadcrumbs({
-  'collapseOnMobile': true,
-  'items': [
-    {
-      'text': "Work history",
-      'href': "/"
-    },
-    {
-      'text': "Preferred jobs",
-      'href': "/preferred"
-    },
-    {
-      'text': "Postcode",
-      'href': '/postcode'
-    },
-    {
-      'text': "Summary",
-      'href': '/summary'
-    },
-    {
-      'text': "Recommended jobs",
-      'href': '/recommended'
-    }
-  ]
-}) }}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your recommended jobs</h1>
-
+    {{ govukTable(
+      {
+        'head': [{'text': 'Job title'}, {'text': 'Description'}, {'text': 'Link'}],
+        'rows': [
+          [{'text': job1}, {'text': desc1}, {'href': link1, 'text': 'Job 1'}],
+          [{'text': job2}, {'text': desc2}, {'href': link2, 'text': 'Job 2'}]
+        ]
+      }
+    )}}
     {{ govukSummaryList({
       'rows': [
         {
@@ -49,10 +38,25 @@
             'text': "Description"
           },
           'actions': {
+            'items':[
+            {
+              'text': "Link",
+            }
+            ]
+          }
+        },
+        {
+          'key': {
+            'text': job1
+          },
+          'value': {
+            'text': desc1
+          },
+          'actions': {
             'items': [
               {
-                'href': "/",
-                'text': "Link to job",
+                'href': link1,
+                'text': 'Job 1',
                 'visuallyHiddenText': "previous"
               }
             ]
@@ -60,33 +64,16 @@
         },
         {
           'key': {
-            'text': "job"
+            'text': job2
           },
           'value': {
-            'text': "description"
+            'text': desc2
           },
           'actions': {
             'items': [
               {
-                'href': "/",
-                'text': "Link to job",
-                'visuallyHiddenText': "previous"
-              }
-            ]
-          }
-        },
-        {
-          'key': {
-            'text': "job 2"
-          },
-          'value': {
-            'text': "description 2"
-          },
-          'actions': {
-            'items': [
-              {
-                'href': "/",
-                'text': "Link to job 2",
+                'href': link2,
+                'text': "Job 2",
                 'visuallyHiddenText': "previous"
               }
             ]
