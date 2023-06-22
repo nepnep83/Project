@@ -5,7 +5,7 @@
 
 {% extends "base.html" %}
 
-{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Bank details – GOV.UK{% endblock %}
+{% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Work history{% endblock %}
 
 {% block beforeContent %}
 {{ super() }}
@@ -36,37 +36,30 @@
 
       {{ form.job_title(params={
         'spellcheck': false,
+        'autocomplete': 'Job title',
         'classes': "govuk-input--width-10"
       }) }}
 
 
-      <a class="govuk-link" href="#">Remove</a>
-
     {% endset -%}
 
-    {{ govukRadios({
-      'name': "Have-you-worked-previously",
-      'fieldset': {
-        'legend': {
-          'text': "Have you worked previously?",
-          'isPageHeading': true,
-          'classes': "govuk-fieldset__legend--m"
-        }
-      },
-      'items': [
-        {
-          'value': "yes",
-          'text': "Yes",
-          'conditional': {
-            'html':jobHtml
+      {{ form.radio(params={
+        'fieldset': {
+          'legend': {
+            'text': "Have you worked previously?",
+            'isPageHeading': true,
+            'classes': "govuk-fieldset__legend--m"
           }
         },
-        {
-          'value': "no",
-          'text': "No"
-        }
-      ]
-    }) }}
+        'items': [
+          {
+            'conditional': {
+              'html': jobHtml
+            }
+          }
+        ]
+      }) }}
+
       {{ form.submit }}
 
 
