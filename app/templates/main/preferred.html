@@ -1,7 +1,7 @@
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
-{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
+{%- from 'govuk_frontend_jinja/components/back-link/macro.html' import govukBackLink -%}
 
 {% extends "base.html" %}
 
@@ -9,29 +9,21 @@
 
 {% block beforeContent %}
 {{ super() }}
+{{ govukBackLink({
+    'text': "Back",
+    'href': url_for('main.index')
+  }) }}
 {% endblock %}
 
 
 {% block content %}
-{{ govukBreadcrumbs({
-  'collapseOnMobile': true,
-  'items': [
-    {
-      'text': "Work history",
-      'href': "/"
-    },
-    {
-      'text': "Preferred jobs",
-      'href': "/preferred"
-    }
-  ]
-}) }}
+
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <form action="" method="post" novalidate>
-    <h1 class="govuk-heading-l">Your preferred jobs</h1>
-    <p class="govuk-body">We want to know if there are specific jobs or types of work you're interested in, even if you think you do not have the necessary skills and experience right now.</p>
+    <h1 class="govuk-heading-l" id="heading">Your preferred jobs</h1>
+    <p class="govuk-body" id="body">We want to know if there are specific jobs or types of work you're interested in, even if you think you do not have the necessary skills and experience right now.</p>
     {% set jobHtml %}
       {{ form.csrf_token }}
 
@@ -49,7 +41,7 @@
           'legend': {
             'text': "Do you know what you'd like to do now or in the near future?",
             'isPageHeading': true,
-            'classes': "govuk-fieldset__legend--m"
+            'classes': "govuk-fieldset__legend--m",
           }
         },
         'items': [

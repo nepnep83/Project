@@ -17,7 +17,7 @@ rm -rf govuk_frontend.zip
 ## The following is only required for the demos and can be removed ##
 #####################################################################
 
-# Remove existing GOV.UK Frontend test fixtures
+# Remove existing GOV.UK Frontend tests fixtures
 rm -rf govuk_components
 
 # Get new release source code and move to a directory
@@ -26,7 +26,7 @@ unzip -o govuk_frontend_source.zip -d govuk_frontend_source
 mkdir govuk_components
 mv govuk_frontend_source/govuk-frontend-4.6.0/package/govuk/components/** govuk_components
 
-# Remove all files apart from test fixtures json
+# Remove all files apart from tests fixtures json
 find govuk_components -type f ! -name 'fixtures.json' -delete
 
 # Tidy up
