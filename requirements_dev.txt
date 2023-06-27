@@ -4,10 +4,13 @@
 #
 #    pip-compile requirements_dev.in
 #
---index-url https://nexus3.ucds.io/repository/pypy-proxy/simple
-
+async-generator==1.10
+    # via trio
 attrs==23.1.0
-    # via flake8-bugbear
+    # via
+    #   flake8-bugbear
+    #   outcome
+    #   trio
 bandit==1.7.5
     # via -r requirements_dev.in
 black==22.12.0
@@ -15,7 +18,9 @@ black==22.12.0
 build==0.10.0
     # via pip-tools
 certifi==2022.12.7
-    # via requests
+    # via
+    #   requests
+    #   selenium
 charset-normalizer==3.1.0
     # via requests
 click==8.1.3
@@ -29,7 +34,10 @@ coverage[toml]==7.2.3
 dparse==0.6.2
     # via safety
 exceptiongroup==1.1.1
-    # via pytest
+    # via
+    #   pytest
+    #   trio
+    #   trio-websocket
 flake8==6.0.0
     # via
     #   flake8-bugbear
@@ -40,8 +48,12 @@ gitdb==4.0.10
     # via gitpython
 gitpython==3.1.31
     # via bandit
+h11==0.14.0
+    # via wsproto
 idna==3.4
-    # via requests
+    # via
+    #   requests
+    #   trio
 iniconfig==2.0.0
     # via pytest
 isort==5.12.0
@@ -54,6 +66,8 @@ mdurl==0.1.2
     # via markdown-it-py
 mypy-extensions==1.0.0
     # via black
+outcome==1.2.0
+    # via trio
 packaging==21.3
     # via
     #   build
@@ -84,6 +98,8 @@ pyparsing==3.0.9
     # via packaging
 pyproject-hooks==1.0.0
     # via build
+pysocks==1.7.1
+    # via urllib3
 pytest==7.3.1
     # via pytest-cov
 pytest-cov==4.0.0
@@ -100,8 +116,14 @@ ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
 safety==2.3.5
     # via -r requirements_dev.in
+selenium==4.10.0
+    # via -r requirements_dev.in
 smmap==5.0.0
     # via gitdb
+sniffio==1.3.0
+    # via trio
+sortedcontainers==2.4.0
+    # via trio
 stevedore==5.0.0
     # via bandit
 toml==0.10.2
@@ -113,10 +135,20 @@ tomli==2.0.1
     #   coverage
     #   pyproject-hooks
     #   pytest
-urllib3==1.26.15
-    # via requests
+trio==0.22.0
+    # via
+    #   selenium
+    #   trio-websocket
+trio-websocket==0.10.3
+    # via selenium
+urllib3[socks]==1.26.15
+    # via
+    #   requests
+    #   selenium
 wheel==0.40.0
     # via pip-tools
+wsproto==1.2.0
+    # via trio-websocket
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

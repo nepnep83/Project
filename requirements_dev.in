@@ -7,3 +7,4 @@ pip-tools==6.13.0
 pur==7.1.0
 pytest-cov==4.0.0
 safety==2.3.5
+selenium==4.10.0
