@@ -17,7 +17,6 @@ class MyTestCase(unittest.TestCase):
         self.context = context
         self.elements = Elements(context)
 
-        # self.pref_job_error =
         self.pref_job = context.browser.find_element(By.ID, "pref_job")
         self.pref_job_label = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/div/label')
 
@@ -59,30 +58,15 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual("Error:\n" + error_message,
                          self.context.browser.find_element(By.ID, 'pref_job-error').text)
 
-    def test_pref_job_input_not_checked_when_no_1(self):
+    @parameterized.expand([
+        ("Invalid character", '❤️'),
+        ("More than 100 characters", 'a' * 101),
+        ("Invalid character", ''),
+    ])
+    def test_pref_job_input_not_checked_when_n(self, name, input_):
         self.generic_elements()
         self.elements.radio.click()
-        self.pref_job.send_keys('❤️')
-        self.elements.radio_2.click()
-        self.assertFalse(self.pref_job.is_displayed())
-        self.assertFalse(self.pref_job_label.is_displayed())
-        self.elements.button.click()
-        self.assertFalse(is_displayed(self.context.browser, 'pref_job-error'))
-
-    def test_pref_job_input_not_checked_when_no_2(self):
-        self.generic_elements()
-        self.elements.radio.click()
-        self.pref_job.send_keys('a'*101)
-        self.elements.radio_2.click()
-        self.assertFalse(self.pref_job.is_displayed())
-        self.assertFalse(self.pref_job_label.is_displayed())
-        self.elements.button.click()
-        self.assertFalse(is_displayed(self.context.browser, 'pref_job-error'))
-
-    def test_pref_job_input_not_checked_when_no_3(self):
-        self.generic_elements()
-        self.elements.radio.click()
-        self.pref_job.send_keys('️')
+        self.pref_job.send_keys(input_)
         self.elements.radio_2.click()
         self.assertFalse(self.pref_job.is_displayed())
         self.assertFalse(self.pref_job_label.is_displayed())
