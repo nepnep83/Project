@@ -12,30 +12,25 @@ class MyTestCase(unittest.TestCase):
     def setUp(self):
         context = Context()
         before_all(context)
-        context.browser.get('http://127.0.0.1:5000/preferred')
+        context.browser.get('http://127.0.0.1:5000/')
         self.context = context
         self.elements = Elements(context)
 
-        self.pref_job = context.browser.find_element(By.ID, "pref_job")
-        self.pref_job_label = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/div/label')
+        self.job_title = context.browser.find_element(By.ID, "job_title")
+        self.job_title_label = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/div/label')
+        self.job_title_heading = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/h2')
+        self.job_title_hint = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/p')
 
         super().setUp()
 
     def generic_elements(self):
-        self.assertTrue(self.elements.back_link.is_displayed())
         self.assertTrue(self.elements.heading.is_displayed())
-        self.assertTrue(self.elements.body.is_displayed())
         self.assertTrue(self.elements.fieldset_heading.is_displayed())
         self.assertTrue(self.elements.radio_hint.is_displayed())
         self.assertTrue(self.elements.button.is_displayed())
 
-        self.assertEqual(self.elements.back_link.text, "Back")
-        self.assertEqual(self.elements.heading.text, "Your preferred jobs")
-        self.assertEqual(self.elements.body.text,
-                         "We want to know if there are specific jobs or types of work you're interested in, "
-                         "even if you think you do not have the necessary skills and experience right now.")
-        self.assertEqual(self.elements.fieldset_heading.text,
-                         "Do you know what you'd like to do now or in the near future?")
+        self.assertEqual(self.elements.heading.text, "Your work history")
+        self.assertEqual(self.elements.fieldset_heading.text, "Have you worked previously?")
         self.assertEqual(self.elements.radio_hint.text, "Select one option.")
         self.assertEqual(self.elements.radio_label.text, "Yes")
         self.assertEqual(self.elements.radio_label2.text, "No")
@@ -52,34 +47,39 @@ class MyTestCase(unittest.TestCase):
     def test_errors_when_invalid_input(self, name, invalid_input, error_message):
         self.generic_elements()
         self.elements.radio.click()
-        self.pref_job.send_keys(invalid_input)
+        self.job_title.send_keys(invalid_input)
         self.elements.button.click()
         self.assertEqual("Error:\n" + error_message,
-                         self.context.browser.find_element(By.ID, 'pref_job-error').text)
+                         self.context.browser.find_element(By.ID, 'job_title-error').text)
 
     @parameterized.expand([
         ("Invalid character", '❤️'),
         ("More than 100 characters", 'a' * 101),
         ("Invalid character", ''),
     ])
-    def test_pref_job_input_not_checked_when_n(self, name, input_):
+    def test_job_title_input_not_checked_when_n(self, name, input_):
         self.generic_elements()
         self.elements.radio.click()
-        self.pref_job.send_keys(input_)
+        self.job_title.send_keys(input_)
         self.elements.radio_2.click()
-        self.assertFalse(self.pref_job.is_displayed())
-        self.assertFalse(self.pref_job_label.is_displayed())
+        self.assertFalse(self.job_title.is_displayed())
+        self.assertFalse(self.job_title_label.is_displayed())
         self.elements.button.click()
-        self.assertFalse(is_displayed(self.context.browser, 'pref_job-error'))
+        self.assertFalse(is_displayed(self.context.browser, 'job_title-error'))
 
     def test_elements_displayed_correctly_when_yes_selected(self):
         self.elements.radio.click()
 
         self.generic_elements()
 
-        self.assertTrue(self.pref_job.is_displayed())
-        self.assertTrue(self.pref_job_label.is_displayed())
-        self.assertEqual(self.pref_job_label.text, "Job")
+        self.assertTrue(self.job_title.is_displayed())
+        self.assertTrue(self.job_title_label.is_displayed())
+        self.assertTrue(self.job_title_heading.is_displayed())
+        self.assertTrue(self.job_title_hint.is_displayed())
+        self.assertEqual(self.job_title_label.text, "Job title")
+        self.assertEqual(self.job_title_heading.text, "Tell us about your previous jobs")
+        self.assertEqual(self.job_title_hint.text,
+                         "Your previous work is helpful to know about, even if you do a different type of work now.")
 
 
 def is_displayed(browser, element_id):
