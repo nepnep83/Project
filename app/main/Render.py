@@ -19,6 +19,7 @@ def index():
     form = JobTitle()
     if form.validate_on_submit():
         session['job_title'] = form.job_title.data
+        session['job_title_2'] = form.job_title_2.data
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
@@ -43,25 +44,34 @@ def postcode():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    jobs = [session['job_title']]
+    jobs = [session['job_title'], session['job_title_2']]
     interest = [session['pref_job']]
     postcode = session['postcode']
-    data = job_vacancies.run(jobs, interest, 10, postcode, 5)
-    session['recommend_job_title1'] = data[0]['title']
-    session['recommend_job_summary1'] = data[0]['summary']
-    session['recommend_job_link1'] = data[0]['link']
-    session['recommend_job_title2'] = data[1]['title']
-    session['recommend_job_summary2'] = data[1]['summary']
-    session['recommend_job_link2'] = data[1]['link']
+    data_1, data_2 = job_vacancies.run(jobs, interest, 10, postcode, 5)
+    for i in range(5):
+        session['recommend_job_' + str(i + 1)] = {"link": data_1[i]["link"],
+                                                  "summary": data_1[i]["summary"],
+                                                  "title": data_1[i]["title"]}
+    for i in range(2):
+        session['preferred_job_' + str(i + 1)] = {"link": data_2[i]["link"],
+                                                  "summary": data_2[i]["summary"],
+                                                  "title": data_2[i]["title"]}
+
     return render_template("summary.html", job_title=session['job_title'], pref_job=session['pref_job'],
                            postcode=session['postcode'])
 
 
 @bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
-    return render_template("recommendation.html", job1=session['recommend_job_title1'],
-                           desc1=session['recommend_job_summary1'], link1=session['recommend_job_link1'], job2=session['recommend_job_title2'],
-                           desc2=session['recommend_job_summary2'], link2=session['recommend_job_link2'])
+    print('here')
+    print(session)
+    print(session['recommend_job_1'])
+    return render_template("recommendation.html", job1=session['recommend_job_1']['title'],
+                           desc1=session['recommend_job_1']['summary'], link1=session['recommend_job_1']['link'], job2=session['recommend_job_2']['title'],
+                           desc2=session['recommend_job_2']['summary'], link2=session['recommend_job_2']['link'], job3=session['recommend_job_3']['title'],
+                           desc3=session['recommend_job_3']['summary'], link3=session['recommend_job_3']['link'], job4=session['recommend_job_4']['title'],
+                           desc4=session['recommend_job_4']['summary'], link4=session['recommend_job_4']['link'], job5=session['recommend_job_5']['title'],
+                           desc5=session['recommend_job_5']['summary'], link5=session['recommend_job_5']['link'])
 
 
 @bp.route("/cookies", methods=["GET", "POST"])

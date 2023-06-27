@@ -33,6 +33,70 @@ class JobTitle(FlaskForm):
                          ])
                     ]
     )
+    job_title_2 = StringField(
+        "Job title 2",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 InputRequired()
+                 ])
+        ]
+    )
+    job_title_3 = StringField(
+        "Job title 3",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 InputRequired()
+                 ])
+        ]
+    )
+    job_title_4 = StringField(
+        "Job title 4",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 InputRequired()
+                 ])
+        ]
+    )
+    job_title_5 = StringField(
+        "Job title 5",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 InputRequired()
+                 ])
+        ]
+    )
     submit = SubmitField("Continue", widget=GovSubmitInput())
 
 

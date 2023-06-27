@@ -1,34 +1,21 @@
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
-{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
-
+{%- from 'govuk_frontend_jinja/components/back-link/macro.html' import govukBackLink -%}
 {% extends "base.html" %}
 
 {% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Postcode{% endblock %}
 
 {% block beforeContent %}
-{{ super() }}
+  {{ super() }}
+  {{ govukBackLink({
+    'text': "Back",
+    'href': url_for('main.preferred')
+  }) }}
 {% endblock %}
 
 
 {% block content %}
-{{ govukBreadcrumbs({
-  'collapseOnMobile': true,
-  'items': [
-    {
-      'text': "Work history",
-      'href': "/"
-    },
-    {
-      'text': "Preferred jobs",
-      'href': "/preferred"
-    },
-    {
-      'text': "Postcode",
-      'href': '/postcode'
-    }
-  ]
-}) }}
+
 
 <form action="" method="post" novalidate>
       {{ form.csrf_token }}

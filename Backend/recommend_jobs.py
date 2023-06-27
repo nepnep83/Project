@@ -105,12 +105,20 @@ def reverse_search(skills, interests):
 
 
 def find_job(rev, job_num):
-    job = []
+    jobs = []
     for i in range(job_num):
         job_response = common.api_call('https://api.lmiforall.org.uk/api/v1/soc/code/' + str(rev[i]))
-        job.append(job_response['title'])
-    print("Your recommended jobs are ", job)
-    return job
+        job_titles = job_response['add_titles']
+        for job in job_titles:
+            if job.find(",") != -1:
+                x = job.split(",")
+                text = (",".join(x[1:]) + " " + x[0])[1:]
+            else:
+                text = job
+            jobs.append(text)
+
+    print("Your recommended jobs are ", jobs)
+    return jobs
 
 
 def run(jobs, interests, _range, interests_range, job_num):
@@ -137,9 +145,11 @@ def run(jobs, interests, _range, interests_range, job_num):
         top_skills.append(skill_list[i]['id'])
     for i in range(interests_range):
         top_interests.append(skills_for_interests[i]['id'])
-    rev = reverse_search(top_skills, top_interests)
-    return find_job(rev, job_num)
-
+    rev_experience = reverse_search(top_skills, '')
+    rev_interest = reverse_search('', top_interests)
+    jobs1 = find_job(rev_experience, job_num)
+    jobs2 = find_job(rev_interest, job_num)
+    return jobs1, jobs2
 
 
 if __name__ == "__main__":
@@ -147,7 +157,7 @@ if __name__ == "__main__":
     interests_range = 5
     job_num = 5
 
-    jobs = get_claimants_jobs()
-    interests = get_claimants_interests()
+    # jobs = get_claimants_jobs()
+    # interests = get_claimants_interests()
 
-    run(jobs, interests, _range, interests_range, job_num)
+    run(['Plumber'], ["Engineer"], _range, interests_range, job_num)
