@@ -23,15 +23,13 @@ class MyTestCase(unittest.TestCase):
 
         super().setUp()
 
-    def test_generic_elements(self):
+    def generic_elements(self):
         self.assertTrue(self.elements.back_link.is_displayed())
         self.assertTrue(self.elements.heading.is_displayed())
         self.assertTrue(self.elements.body.is_displayed())
         self.assertTrue(self.elements.fieldset_heading.is_displayed())
         self.assertTrue(self.elements.radio_hint.is_displayed())
         self.assertTrue(self.elements.button.is_displayed())
-        self.assertFalse(self.pref_job.is_displayed())
-        self.assertFalse(self.pref_job_label.is_displayed())
 
         self.assertEqual(self.elements.back_link.text, "Back")
         self.assertEqual(self.elements.heading.text, "Your preferred jobs")
@@ -45,12 +43,16 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(self.elements.radio_label2.text, "No")
         self.assertEqual(self.elements.button.text, "Continue")
 
+    def test_generic_elements_are_displayed(self):
+        self.generic_elements()
+
     @parameterized.expand([
         ("Invalid character", '❤️', "Inputs must only contain alphabetical and selected special characters"),
         ("More than 100 characters", 'a' * 101, "Input must not be more than 100 characters"),
         ("Invalid character", '', "This field is required."),
     ])
     def test_errors_when_invalid_input(self, name, invalid_input, error_message):
+        self.generic_elements()
         self.elements.radio.click()
         self.pref_job.send_keys(invalid_input)
         self.elements.button.click()
@@ -58,31 +60,43 @@ class MyTestCase(unittest.TestCase):
                          self.context.browser.find_element(By.ID, 'pref_job-error').text)
 
     def test_pref_job_input_not_checked_when_no_1(self):
+        self.generic_elements()
         self.elements.radio.click()
         self.pref_job.send_keys('❤️')
         self.elements.radio_2.click()
+        self.assertFalse(self.pref_job.is_displayed())
+        self.assertFalse(self.pref_job_label.is_displayed())
         self.elements.button.click()
         self.assertFalse(is_displayed(self.context.browser, 'pref_job-error'))
 
     def test_pref_job_input_not_checked_when_no_2(self):
+        self.generic_elements()
         self.elements.radio.click()
         self.pref_job.send_keys('a'*101)
         self.elements.radio_2.click()
+        self.assertFalse(self.pref_job.is_displayed())
+        self.assertFalse(self.pref_job_label.is_displayed())
         self.elements.button.click()
         self.assertFalse(is_displayed(self.context.browser, 'pref_job-error'))
 
     def test_pref_job_input_not_checked_when_no_3(self):
+        self.generic_elements()
         self.elements.radio.click()
         self.pref_job.send_keys('️')
         self.elements.radio_2.click()
+        self.assertFalse(self.pref_job.is_displayed())
+        self.assertFalse(self.pref_job_label.is_displayed())
         self.elements.button.click()
         self.assertFalse(is_displayed(self.context.browser, 'pref_job-error'))
 
     def test_elements_displayed_correctly_when_yes_selected(self):
-
         self.elements.radio.click()
+
+        self.generic_elements()
+
+        self.assertTrue(self.pref_job.is_displayed())
+        self.assertTrue(self.pref_job_label.is_displayed())
         self.assertEqual(self.pref_job_label.text, "Job")
-        self.assertTrue(is_displayed(self.context.browser, 'pref_job-hint'))
 
 
 def is_displayed(browser, element_id):
@@ -91,6 +105,7 @@ def is_displayed(browser, element_id):
         return element.is_displayed()
     except NoSuchElementException:
         return False
+
 
 if __name__ == '__main__':
     unittest.main()
