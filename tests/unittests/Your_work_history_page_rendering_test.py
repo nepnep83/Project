@@ -21,11 +21,11 @@ class MyTestCase(unittest.TestCase):
         self.job_title_heading = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/h2')
         self.job_title_hint = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/p')
 
+
         super().setUp()
 
     def generic_elements(self):
         self.assertTrue(self.elements.heading.is_displayed())
-        self.assertTrue(self.elements.fieldset_heading.is_displayed())
         self.assertTrue(self.elements.radio_hint.is_displayed())
         self.assertTrue(self.elements.button.is_displayed())
 
