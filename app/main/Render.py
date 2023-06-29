@@ -82,6 +82,12 @@ def recommendation():
                            link5=recommend_job_5['link'])
 
 
+@bp.route("/test", methods=["GET", "POST"])
+def summary_test():
+
+    return render_template("summary.html")
+
+
 @bp.route("/cookies", methods=["GET", "POST"])
 def cookies():
     form = CookiesForm()
@@ -113,9 +119,3 @@ def cookies():
             form.functional.data = cookies_policy["functional"]
             form.analytics.data = cookies_policy["analytics"]
     return render_template("cookies.html", form=form)
-
-
-def store_data(info):
-    ident = str(uuid.uuid4())
-    session['id'] = ident
-    print(session['id'])

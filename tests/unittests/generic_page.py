@@ -12,7 +12,7 @@ class Elements:
         self.radio_hint = find_element(context.browser, By.ID, "radio-hint")
         self.radio = find_element(context.browser, By.ID, "radio")
         self.radio_label = find_element(context.browser, By.XPATH,
-                                                        '//*[@id="main-content"]/div/div/form/div/fieldset/div[2]/div[1]/label')
+                                                        '//*[@id="man-content"]/div/div/form/div/fieldset/div[2]/div[1]/label')
         self.radio_label2 = find_element(context.browser, By.XPATH,
                                                          '//*[@id="main-content"]/div/div/form/div/fieldset/div[2]/div[3]/label')
         self.radio_2 = find_element(context.browser, By.ID, "radio-2")

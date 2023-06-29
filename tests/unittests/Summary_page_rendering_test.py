@@ -11,6 +11,8 @@ from tests.unittests.generic_page import Elements
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
+        session['job_title'] = 'Title'
+
         context = Context()
         before_all(context)
         context.browser.get('http://127.0.0.1:5000/summary')
@@ -52,4 +54,3 @@ def is_displayed(browser, element_id):
 
 if __name__ == '__main__':
     unittest.main()
-
