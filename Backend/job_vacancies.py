@@ -23,16 +23,19 @@ def find_vacancies(travel_distance, postcode, jobs):
     _jobs = []
     for job in jobs:
         try:
-            time.sleep(0.5)
+            time.sleep(1)
             vacancies = common.api_call(
                 "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=" + str(
                     travel_distance) + "&location=" + postcode + "&keywords=" + job)
-            if Exception != 'There seems to be a issue getting your job recommendations back to you, please try again later':
-                _jobs.append(vacancies[0])
-                if len(_jobs) >= 5:
-                    return _jobs
-        except:
-            print('')
+            print(vacancies)
+            _jobs.append(vacancies[0])
+            print(_jobs)
+            if len(_jobs) >= 5:
+                return _jobs
+            else:
+                print("No job found")
+        except Exception as e:
+            print(e)
 
     return _jobs
 
