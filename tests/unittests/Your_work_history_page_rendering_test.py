@@ -17,6 +17,10 @@ class MyTestCase(unittest.TestCase):
         self.elements = Elements(context)
 
         self.job_title = context.browser.find_element(By.ID, "job_title")
+        self.job_title_2 = context.browser.find_element(By.ID, "job_title_2")
+        self.job_title_3 = context.browser.find_element(By.ID, "job_title_3")
+        self.job_title_4 = context.browser.find_element(By.ID, "job_title_4")
+        self.job_title_5 = context.browser.find_element(By.ID, "job_title_5")
         self.job_title_label = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/div/label')
         self.job_title_heading = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/h2')
         self.job_title_hint = context.browser.find_element(By.XPATH, '//*[@id="conditional-radio"]/p')
@@ -48,9 +52,21 @@ class MyTestCase(unittest.TestCase):
         self.generic_elements()
         self.elements.radio.click()
         self.job_title.send_keys(invalid_input)
+        self.job_title_2.send_keys(invalid_input)
+        self.job_title_3.send_keys(invalid_input)
+        self.job_title_4.send_keys(invalid_input)
+        self.job_title_5.send_keys(invalid_input)
         self.elements.button.click()
         self.assertEqual("Error:\n" + error_message,
                          self.context.browser.find_element(By.ID, 'job_title-error').text)
+        self.assertEqual("Error:\n" + error_message,
+                         self.context.browser.find_element(By.ID, 'job_title2-error').text)
+        self.assertEqual("Error:\n" + error_message,
+                         self.context.browser.find_element(By.ID, 'job_title3-error').text)
+        self.assertEqual("Error:\n" + error_message,
+                         self.context.browser.find_element(By.ID, 'job_title4-error').text)
+        self.assertEqual("Error:\n" + error_message,
+                         self.context.browser.find_element(By.ID, 'job_title5-error').text)
 
     @parameterized.expand([
         ("Invalid character", '❤️'),
