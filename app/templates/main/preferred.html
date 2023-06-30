@@ -1,3 +1,5 @@
+
+
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
@@ -24,6 +26,11 @@
     <form action="" method="post" novalidate>
     <h1 class="govuk-heading-l" id="heading">Your preferred jobs</h1>
     <p class="govuk-body" id="body">We want to know if there are specific jobs or types of work you're interested in, even if you think you do not have the necessary skills and experience right now.</p>
+
+        {% set always = sample_text[:3] %}
+        {% set optional = sample_text[3:] %}
+    <p class="govuk-body">{{always}}<span id="txt">{{optional}}</span> <span class="govuk-link" id="more"> &ltshow more> </span></p>
+
     {% set jobHtml %}
       {{ form.csrf_token }}
 

@@ -28,12 +28,17 @@ def index():
 
 
 @bp.route("/preferred", methods=["GET", "POST"])
-def preferred():
+def preferred(classes='class'):
     form = PrefJob()
     if form.validate_on_submit():
         session['pref_job'] = form.pref_job.data
         return redirect(url_for("main.postcode"))
-    return render_template("preferred.html", form=form)
+    return render_template("preferred.html", form=form, sample_text=classes, classes=classes)
+
+
+def change_disp():
+    print('here')
+    preferred('test').render()
 
 
 @bp.route("/postcode", methods=["GET", "POST"])
@@ -47,7 +52,6 @@ def postcode():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-
     return render_template("summary.html", job_title=session['job_title'], pref_job=session['pref_job'],
                            postcode=session['postcode'])
 
@@ -80,7 +84,6 @@ def recommendation():
 
 @bp.route("/test", methods=["GET", "POST"])
 def summary_test():
-
     return render_template("summary.html")
 
 

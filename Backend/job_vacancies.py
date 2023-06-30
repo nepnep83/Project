@@ -15,11 +15,11 @@ def get_claimant_info():
 
 
 def get_recommend_jobs(jobs, interest):
-    jobs = recommend_jobs.run(jobs, interest, _range, interests_range, job_range)
-    return jobs
+    job, interests = recommend_jobs.run(jobs, interest, _range, interests_range, job_range)
+    return job, interests
 
 
-def find_vacancies(travel_distance, postcode, jobs):
+def find_vacancies(travel_distance, postcode, jobs, job_num):
     _jobs = []
     for job in jobs:
         try:
@@ -30,7 +30,7 @@ def find_vacancies(travel_distance, postcode, jobs):
             print(vacancies)
             _jobs.append(vacancies[0])
             print(_jobs)
-            if len(_jobs) >= 5:
+            if len(_jobs) >= job_num:
                 return _jobs
             else:
                 print("No job found")
@@ -41,16 +41,10 @@ def find_vacancies(travel_distance, postcode, jobs):
 
 
 def run(jobs, interests, distance, location, _range):
-    recommended_jobs_experience, recommended_jobs_preferred = recommend_jobs.run(jobs, interests, _range,
-                                                                                 interests_range, job_range)
-    local_jobs_experience = find_vacancies(distance, location, recommended_jobs_experience)
-    local_jobs_preferred = find_vacancies(distance, location, recommended_jobs_preferred)
-    # for jobs in local_jobs:
-    #   job = local_jobs[jobs]
-    # for i in range(_range):
-    #     print(local_jobs_experience[i]['title'])
-    #     print(local_jobs_experience[i]['company'])
-    #     print(local_jobs_experience[i]['link'], '\n')
+    recommended_jobs_experience, recommended_jobs_preferred = get_recommend_jobs(jobs, interests)
+    local_jobs_experience = find_vacancies(distance, location, recommended_jobs_experience, _range)
+    local_jobs_preferred = find_vacancies(distance, location, recommended_jobs_preferred, _range)
+
     print(local_jobs_experience)
     return local_jobs_experience, local_jobs_preferred
 
