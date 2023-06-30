@@ -22,12 +22,12 @@ class MyTestCase(unittest.TestCase):
         super().setUp()
 
     def generic_elements(self):
-        # self.assertTrue(self.elements.back_link.is_displayed())
+        self.assertTrue(self.elements.back_link.is_displayed())
         self.assertTrue(self.elements.heading.is_displayed())
         self.assertTrue(self.elements.button.is_displayed())
         self.assertTrue(self.postcode.is_displayed())
 
-        # self.assertEqual(self.elements.back_link.text, "Back")
+        self.assertEqual(self.elements.back_link.text, "Back")
         self.assertEqual(self.elements.heading.text, "Your postcode")
         self.assertEqual(self.postcode_label.text, "What is your current postcode?")
         self.assertEqual(self.elements.button.text, "Continue")

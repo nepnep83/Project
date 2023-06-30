@@ -20,6 +20,9 @@ def index():
     if form.validate_on_submit():
         session['job_title'] = form.job_title.data
         session['job_title_2'] = form.job_title_2.data
+        session['job_title_3'] = form.job_title_3.data
+        session['job_title_4'] = form.job_title_4.data
+        session['job_title_5'] = form.job_title_5.data
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
@@ -65,20 +68,13 @@ def recommendation():
                                                   "summary": data_2[i]["summary"],
                                                   "title": data_2[i]["title"]}
     return render_template("recommendation.html",
-                           desc1=recommend_job_1['summary'],
-                           job1=recommend_job_1['title'],
-                           link1=recommend_job_1['link'],
-                           desc2=recommend_job_2['summary'],
-                           job2=recommend_job_2['title'],
-                           link2=recommend_job_2['link'],
-                           desc3=recommend_job_3['summary'],
-                           job3=recommend_job_3['title'],
-                           link3=recommend_job_3['link'],
-                           desc4=recommend_job_4['summary'],
-                           job4=recommend_job_4['title'],
-                           link4=recommend_job_4['link'],
-                           desc5=recommend_job_5['summary'],
-                           job5=recommend_job_5['title'],
+                           desc1=recommend_job_1['summary'], job1=recommend_job_1['title'],
+                           link1=recommend_job_1['link'], desc2=recommend_job_2['summary'],
+                           job2=recommend_job_2['title'], link2=recommend_job_2['link'],
+                           desc3=recommend_job_3['summary'], job3=recommend_job_3['title'],
+                           link3=recommend_job_3['link'], desc4=recommend_job_4['summary'],
+                           job4=recommend_job_4['title'], link4=recommend_job_4['link'],
+                           desc5=recommend_job_5['summary'], job5=recommend_job_5['title'],
                            link5=recommend_job_5['link'])
 
 

@@ -32,11 +32,11 @@ class MyTestCase(unittest.TestCase):
         super().setUp()
 
     def generic_elements(self):
-        # self.assertTrue(self.elements.back_link.is_displayed())
+        self.assertTrue(self.elements.back_link.is_displayed())
         self.assertTrue(self.postcode_key.is_displayed())
         self.assertTrue(self.elements.button.is_displayed())
 
-        # self.assertEqual(self.elements.back_link.text, "Back")
+        self.assertEqual(self.elements.back_link.text, "Back")
         self.assertEqual(self.elements.heading.text, "Help us understand your work situation: check your answers")
         self.assertEqual(self.elements.button.text, "Continue")
 
