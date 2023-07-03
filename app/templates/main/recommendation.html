@@ -19,128 +19,64 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your recommended jobs</h1>
-<!--  {{ govukTable(
-      {
-        'head': [{'text': 'Job title',"rowspan": 1,
-                        "colspan": 1}, {'text': 'Description',"rowspan": 1,
-                        "colspan": 2}, {'text': 'Link',"rowspan": 1,
-                        "colspan": 3}],
-        'rows': [
-          [{'text': job1,"rowspan": 1,
-                        "colspan": 1}, {'text': desc1, "rowspan": 1,
-                        "colspan": 2}, {'text': 'link1',"rowspan": 1,
-                        "colspan": 3}],
+    <h2 class="govuk-heading-m">Based on your previous work history</h2>
 
-          [{'text': job2,"rowspan": 2,
-                        "colspan": 1}, {'text': desc2, "rowspan": 2,
-                        "colspan": 2}, {'text': link2, 'text': 'Job 2',"rowspan": 2,
-                        "colspan": 3}],
-
-          [{'text': job3,"rowspan": 3,
-                        "colspan": 1}, {'text': desc3, "rowspan": 3,
-                        "colspan": 2}, {'text': link3, 'text': 'Job 3',"rowspan": 3,
-                        "colspan": 3}],
-
-          [{'text': job4,"rowspan": 4,
-                        "colspan": 1}, {'text': desc4, "rowspan": 4,
-                        "colspan": 2}, {'text': link4, 'text': 'Job 4',"rowspan": 4,
-                        "colspan": 3}],
-
-          [{'text': job5,"rowspan": 5,
-                        "colspan": 1}, {'text': desc5, "rowspan": 5,
-                        "colspan": 2}, {'text': link5, 'text': 'Job 5',"rowspan": 5,
-                        "colspan": 3}]
-        ]
-      }
-    )}}-->
-    {{ govukSummaryList({
-      'rows': [
-        {
+    {% set row_values = [] %}
+    {% for row in rows %}
+      {% set next_row =
+    {
           'key': {
-            'text': job1
+            'text': row.job
           },
           'value': {
-            'text': desc1
+            'html': row.desc[:100] + '<span class="govuk-body text" id=txt%s>'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body" id="dots%s>">...</span> <span class="govuk-link" id="more%s"> &ltshow more> </span>'|format(loop.index|string, loop.index|string)
           },
           'actions': {
             'items': [
               {
-                'href': link1,
-                'text': 'Job 1',
-                'visuallyHiddenText': job1+" link"
-              }
-            ]
-          }
-        },
-        {
-          'key': {
-            'text': job2
-          },
-          'value': {
-            'text': desc2
-          },
-          'actions': {
-            'items': [
-              {
-                'href': link2,
-                'text': "Job 2",
-                'visuallyHiddenText': job2+"link"
-              }
-            ]
-          }
-        },
-        {
-          'key': {
-            'text': job3
-          },
-          'value': {
-            'text': desc3
-          },
-          'actions': {
-            'items': [
-              {
-                'href': link3,
-                'text': "Job 3",
-                'visuallyHiddenText': job3+"link"
-              }
-            ]
-          }
-        },
-        {
-          'key': {
-            'text': job4
-          },
-          'value': {
-            'text': desc4
-          },
-          'actions': {
-            'items': [
-              {
-                'href': link4,
-                'text': "Job 4",
-                'visuallyHiddenText': job4+"link"
-              }
-            ]
-          }
-        },
-        {
-          'key': {
-            'text': job5
-          },
-          'value': {
-            'text': desc5
-          },
-          'actions': {
-            'items': [
-              {
-                'href': link5,
-                'text': "Job 5",
-                'visuallyHiddenText': job5+"link"
+                'href': row.link,
+                'text': 'Job '+ loop.index|string,
+                'visuallyHiddenText': row.job
               }
             ]
           }
         }
-      ]
+    %}
+    {{ row_values.append(next_row) or "" }}
+    {% endfor %}
+
+    {{ govukSummaryList({
+      'rows': row_values
+    }) }}
+
+    <h2 class="govuk-heading-m">Based on your preferred jobs</h2>
+
+    {% set pref_row_values = [] %}
+    {% for row in pref_rows %}
+      {% set next_row =
+    {
+          'key': {
+            'text': row.job
+          },
+          'value': {
+            'html': row.desc[:100] + '<span class="govuk-body text" id="txt2">' + row.desc[100:] + '</span><span class="govuk-body" id=("dots2")>...</span> <span class="govuk-link" id="more2"> &ltshow more> </span>'
+          },
+          'actions': {
+            'items': [
+              {
+                'href': row.link,
+                'text': 'Job 1',
+                'visuallyHiddenText': row.job+" link"
+              }
+            ]
+          }
+        }
+    %}
+    {{ pref_row_values.append(next_row) or "" }}
+    {% endfor %}
+
+    {{ govukSummaryList({
+      'rows': pref_row_values
     }) }}
 
     {{ govukButton({

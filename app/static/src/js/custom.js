@@ -1,13 +1,23 @@
-function showMore() {
-    var text = document.getElementById("txt")
-    var button = document.getElementById("more")
+function showMore(num) {
+    var text = document.getElementById("txt"+ num)
+    var button = document.getElementById("more"+ num)
+    var dots = document.getElementById("dots"+ num)
 
-    if (button.innerHTML.indexOf("&ltshow more>") !== -1) {
-        button.innerHTML = "&ltshow less>";
-        text.style.display = "inline";
-    } else {
+    if (dots.style.display === "none") {
         button.innerHTML = "&ltshow more>";
         text.style.display = "none";
+        dots.style.display = "inline";
+    } else {
+        button.innerHTML = "&ltshow less>";
+        text.style.display = "inline";
+        dots.style.display = "none";
     }
 }
-document.getElementById("more").addEventListener("click", showMore)
+for (let i = 1; i < 9; i++){
+    if (document.getElementById("more" + i)){
+        document.getElementById("more" + i).addEventListener("click", ()=>{showMore(i)})
+    }
+    else{
+        break
+    }
+}
