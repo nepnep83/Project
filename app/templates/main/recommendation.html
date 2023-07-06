@@ -29,7 +29,7 @@
             'text': row.job
           },
           'value': {
-            'html': row.desc[:100] + '<span class="govuk-body text" id=txt%s>'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body" id="dots%s>">...</span> <span class="govuk-link" id="more%s"> &ltshow more> </span>'|format(loop.index|string, loop.index|string)
+            'html': row.desc[:100] + '<span class="govuk-body text" id=txt%s>'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="dots%s">'|format(loop.index|string) +'...</span><span class="govuk-link" id="more%s"> &ltshow more> </span>'|format(loop.index|string)
           },
           'actions': {
             'items': [
@@ -59,13 +59,13 @@
             'text': row.job
           },
           'value': {
-            'html': row.desc[:100] + '<span class="govuk-body text" id="txt2">' + row.desc[100:] + '</span><span class="govuk-body" id=("dots2")>...</span> <span class="govuk-link" id="more2"> &ltshow more> </span>'
+            'html': row.desc[:100] + '<span class="govuk-body text" id="pref_txt%s">'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="pref_dots%s">'|format(loop.index|string) +'...</span> <span class="govuk-link" id="pref_more%s">'|format(loop.index|string) +' &ltshow more> </span>'
           },
           'actions': {
             'items': [
               {
                 'href': row.link,
-                'text': 'Job 1',
+                'text': 'Job '+ loop.index|string,
                 'visuallyHiddenText': row.job+" link"
               }
             ]
