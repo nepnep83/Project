@@ -12,16 +12,16 @@ user_account = "user_account"
 
 
 @bp.route("/", methods=["GET", "POST"])
-def postcode():
+def index():
     form = Postcode()
     if form.validate_on_submit():
         session['postcode'] = form.postcode.data
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.work_history"))
     return render_template("postcode.html", form=form)
 
 
-@bp.route("/work history", methods=["GET", "POST"])
-def index():
+@bp.route("/work_history", methods=["GET", "POST"])
+def work_history():
     jobs = []
     form = JobTitle()
     if form.validate_on_submit():
@@ -33,6 +33,24 @@ def index():
         else:
             session['job_titles'] = []
 
+        if len(jobs) > 0:
+            recommend_job = job_vacancies.run(jobs, 10, session['postcode'], 5)
+
+            recommend_job_1 = recommend_job[0]
+            recommend_job_2 = recommend_job[1]
+            recommend_job_3 = recommend_job[2]
+            recommend_job_4 = recommend_job[3]
+            recommend_job_5 = recommend_job[4]
+
+            session['rows'] = [
+                {'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
+                {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
+                {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
+                {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
+                {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
+        else:
+            session['message'] = NO_JOBS_FOUND_MESSAGE
+
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
@@ -43,8 +61,26 @@ def preferred():
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
             session['pref_job'] = form.pref_job.data
+            print(session['pref_job'])
         else:
             session['pref_job'] = ''
+
+        if len(session['pref_job']) > 0:
+            preferred_job = job_vacancies.run(session['pref_job'], 10, session['postcode'], 3)
+            preferred_job_1 = preferred_job[0]
+            preferred_job_2 = preferred_job[1]
+            preferred_job_3 = preferred_job[2]
+
+            session['pref_rows'] = [
+                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'],
+                 'link': preferred_job_1['link']},
+                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'],
+                 'link': preferred_job_2['link']},
+                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'],
+                 'link': preferred_job_3['link']}]
+        else:
+            session['pref_message'] = NO_JOBS_FOUND_MESSAGE
+        print(session)
         return redirect(url_for("main.summary"))
     return render_template("preferred.html", form=form)
 
@@ -57,50 +93,8 @@ def summary():
 
 @bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
-    jobs = session['job_titles']
-    interest = session['pref_job']
-    provided_postcode = session['postcode']
-    message = ''
-    pref_message = ''
-    rows = []
-    pref_rows = []
-    if True:
-        if len(jobs) > 0:
-            recommend_job = job_vacancies.run(jobs, 10, provided_postcode, 5)
-
-            recommend_job_1 = recommend_job[0]
-            recommend_job_2 = recommend_job[1]
-            recommend_job_3 = recommend_job[2]
-            recommend_job_4 = recommend_job[3]
-            recommend_job_5 = recommend_job[4]
-
-            rows = [
-                {'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
-                {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
-                {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
-                {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
-                {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
-        else:
-            message = NO_JOBS_FOUND_MESSAGE
-
-        if len(interest) > 0:
-            preferred_job = job_vacancies.run(interest, 10, provided_postcode, 3)
-            preferred_job_1 = preferred_job[0]
-            preferred_job_2 = preferred_job[1]
-            preferred_job_3 = preferred_job[2]
-
-            pref_rows = [
-                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'],
-                 'link': preferred_job_1['link']},
-                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'],
-                 'link': preferred_job_2['link']},
-                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'],
-                 'link': preferred_job_3['link']}]
-        else:
-            pref_message = NO_JOBS_FOUND_MESSAGE
-
-    return render_template("recommendation.html", rows=rows, pref_rows=pref_rows, message=message,
-                           pref_message=pref_message)
+    return render_template("recommendation.html", rows=session['rows'], pref_rows=session['pref_rows'],
+                           message=session['message'], pref_message=session['pref_message'])
 
 
 @bp.route("/test", methods=["GET", "POST"])
