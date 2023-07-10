@@ -105,9 +105,9 @@ def reverse_search(skills, interests):
     return rev
 
 
-def find_job(rev, job_num):
+def find_job(rev, no_of_jobs):
     jobs = []
-    for i in range(job_num):
+    for i in range(no_of_jobs):
         job_response = common.api_call('https://api.lmiforall.org.uk/api/v1/soc/code/' + str(rev[i]))
         job_titles = job_response['add_titles']
         for job in job_titles:
@@ -122,13 +122,10 @@ def find_job(rev, job_num):
     return jobs
 
 
-def run(jobs, interests, _range, interests_range, job_num):
+def run(jobs, _range, no_of_jobs):
     skill_list = []
     top_skills = []
-    top_interests = []
-    skills_for_interests = []
     jobs1 = ''
-    jobs2 = ''
 
     try:
         for job in jobs:
@@ -140,26 +137,13 @@ def run(jobs, interests, _range, interests_range, job_num):
     except Exception as e:
         print(e)
 
-    try:
-        for interest in interests:
-            soc = get_soc_code(interest)
-            onet = soc_to_onet(soc)
-            skills_for_interests = onet_interests(onet, interests_range)
-
-    except Exception as e:
-        print(e)
-
     if len(jobs) > 0:
         for i in range(_range):
             top_skills.append(skill_list[i]['id'])
         rev_experience = reverse_search(top_skills, '')
-        jobs1 = find_job(rev_experience, job_num)
-    if len(interests) > 0:
-        for i in range(interests_range):
-            top_interests.append(skills_for_interests[i]['id'])
-        rev_interest = reverse_search('', top_interests)
-        jobs2 = find_job(rev_interest, job_num)
-    return jobs1, jobs2
+        jobs1 = find_job(rev_experience, no_of_jobs)
+
+    return jobs1
 
 
 if __name__ == "__main__":
@@ -167,7 +151,4 @@ if __name__ == "__main__":
     interests_range = 5
     job_num = 5
 
-    # jobs = get_claimants_jobs()
-    # interests = get_claimants_interests()
-
-    run(['Plumber'], ["Engineer"], _range, interests_range, job_num)
+    run(['Plumber'], _range, job_num)

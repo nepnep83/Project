@@ -8,15 +8,15 @@ job_range = 5
 
 
 def get_claimant_info():
-    distance = input('Input how far you are willing to travel for work in miles ')
-    location = input('Input the first half of your postcode (eg. SE1) ')
+    distance_inp = input('Input how far you are willing to travel for work in miles ')
+    location_inp = input('Input the first half of your postcode (eg. SE1) ')
 
-    return distance, location
+    return distance_inp, location_inp
 
 
-def get_recommend_jobs(jobs, interest):
-    job, interests = recommend_jobs.run(jobs, interest, _range, interests_range, job_range)
-    return job, interests
+def get_recommend_jobs(jobs):
+    job = recommend_jobs.run(jobs, _range, job_range)
+    return job
 
 
 def find_vacancies(travel_distance, postcode, jobs, job_num):
@@ -30,6 +30,7 @@ def find_vacancies(travel_distance, postcode, jobs, job_num):
             print("vacancies ", vacancies)
             _jobs.append(vacancies[0])
             print("_jobs ", _jobs)
+            print("job length " + str(len(_jobs)))
             if len(_jobs) >= job_num:
                 return _jobs
             else:
@@ -40,17 +41,15 @@ def find_vacancies(travel_distance, postcode, jobs, job_num):
     return _jobs
 
 
-def run(jobs, interests, distance, location, _range):
-    recommended_jobs_experience, recommended_jobs_preferred = get_recommend_jobs(jobs, interests)
-    local_jobs_experience = find_vacancies(distance, location, recommended_jobs_experience, _range)
-    local_jobs_preferred = find_vacancies(distance, location, recommended_jobs_preferred, _range)
+def run(jobs, distance_to_job, location_of_claimant, _range):
+    recommended_jobs_experience = get_recommend_jobs(jobs)
+    local_jobs_experience = find_vacancies(distance_to_job, location_of_claimant, recommended_jobs_experience, _range)
 
     print("local_jobs_experience ", local_jobs_experience)
-    return local_jobs_experience, local_jobs_preferred
+    return local_jobs_experience
 
 
 if __name__ == "__main__":
     distance, location = get_claimant_info()
     place_holder_job = ['plumber']
-    place_holder_interest = ['engineer']
-    run(place_holder_job, place_holder_interest, distance, location, job_range)
+    run(place_holder_job, distance, location, job_range)

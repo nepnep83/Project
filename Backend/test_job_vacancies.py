@@ -29,7 +29,7 @@ class MyTestCase(unittest.TestCase):
         expected_data = ('plumber', 'engineer')
         mocked_recommendation.return_value = ('plumber', 'engineer')
 
-        actual_data = job_vacancies.get_recommend_jobs(job, interest)
+        actual_data = job_vacancies.get_recommend_jobs(job)
 
         self.assertEqual(expected_data, actual_data)
 
@@ -59,10 +59,9 @@ class MyTestCase(unittest.TestCase):
              'location': {'location': 'BR1 3NN', 'city': '', 'area': '', 'postcode': '', 'country': ''},
              'link': 'https://findajob.dwp.gov.uk/details/12181272'}]
 
-        actual_data_1, actual_data_2 = job_vacancies.run(job, interest, place_holder_distance, place_holder_location, _range)
+        actual_data_1 = job_vacancies.run(job, place_holder_distance, place_holder_location, _range)
 
         self.assertEqual(expected_data_1, actual_data_1)
-        self.assertEqual(expected_data_1, actual_data_2)
         mocked_vacancies.assert_has_calls([mock.call('10', 'da1', 'plumber', 1), mock.call('10', 'da1', 'engineer', 1)])
 
 

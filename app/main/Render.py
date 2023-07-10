@@ -1,14 +1,11 @@
-import uuid
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, make_response
 import json
-import csv
-from flask_wtf.csrf import CSRFError
-from werkzeug.exceptions import HTTPException
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
-from Backend import recommend_jobs, job_vacancies
+from Backend import job_vacancies
+
+NO_JOBS_FOUND_MESSAGE = "We could not find any recommended jobs for you at the moment, please try again later."
 
 user_info = "user_info"
 user_account = "user_account"
@@ -21,8 +18,8 @@ def index():
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
             for i in range(1, 6):
-                if form["job_title_"+str(i)].data:
-                    jobs.append(form["job_title_"+str(i)].data)
+                if form["job_title_" + str(i)].data:
+                    jobs.append(form["job_title_" + str(i)].data)
             session["job_titles"] = jobs
         else:
             session['job_titles'] = []
@@ -54,7 +51,6 @@ def postcode():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-
     return render_template("summary.html", job_titles=session['job_titles'], pref_job=session['pref_job'],
                            postcode=session['postcode'])
 
@@ -63,51 +59,48 @@ def summary():
 def recommendation():
     jobs = session['job_titles']
     interest = session['pref_job']
-    postcode = session['postcode']
+    provided_postcode = session['postcode']
     message = ''
     pref_message = ''
     rows = []
     pref_rows = []
     if True:
         if len(jobs) > 0:
-            if len(interest) > 0:
-                data_1, data_2 = job_vacancies.run(jobs, interest, 10, postcode, 5)
-            else:
-                pref_message = "We could not find any recommended jobs for you at the moment, please try again later."
-                data_1, data_2 = job_vacancies.run(jobs, [], 10, postcode, 5)
-        else:
-            if len(interest) > 0:
-                data_1, data_2 = job_vacancies.run([], interest, 10, postcode, 5)
-            else:
-                pref_message = "We could not find any recommended jobs for you at the moment, please try again later."
-            message = "We could not find any recommended jobs for you at the moment, please try again later."
-        try:
-            recommend_job_1 = data_1[0]
-            recommend_job_2 = data_1[1]
-            recommend_job_3 = data_1[2]
-            recommend_job_4 = data_1[3]
-            recommend_job_5 = data_1[4]
+            recommend_job = job_vacancies.run(jobs, 10, provided_postcode, 5)
 
-            rows = [{'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
-                    {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
-                    {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
-                    {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
-                    {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
-        except:
-            message = "We could not find any recommended jobs for you at the moment, please try again later."
-        try:
-            preferred_job_1 = data_2[0]
-            preferred_job_2 = data_2[1]
-            preferred_job_3 = data_2[2]
+            recommend_job_1 = recommend_job[0]
+            recommend_job_2 = recommend_job[1]
+            recommend_job_3 = recommend_job[2]
+            recommend_job_4 = recommend_job[3]
+            recommend_job_5 = recommend_job[4]
+
+            rows = [
+                {'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
+                {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
+                {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
+                {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
+                {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
+        else:
+            message = NO_JOBS_FOUND_MESSAGE
+
+        if len(interest) > 0:
+            preferred_job = job_vacancies.run(interest, 10, provided_postcode, 3)
+            preferred_job_1 = preferred_job[0]
+            preferred_job_2 = preferred_job[1]
+            preferred_job_3 = preferred_job[2]
 
             pref_rows = [
-                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'], 'link': preferred_job_1['link']},
-                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'], 'link': preferred_job_2['link']},
-                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'], 'link': preferred_job_3['link']}]
-        except:
-            pref_message = "We could not find any recommended jobs for you at the moment, please try again later."
+                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'],
+                 'link': preferred_job_1['link']},
+                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'],
+                 'link': preferred_job_2['link']},
+                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'],
+                 'link': preferred_job_3['link']}]
+        else:
+            pref_message = NO_JOBS_FOUND_MESSAGE
 
-    return render_template("recommendation.html", rows=rows, pref_rows=pref_rows, message=message, pref_message=pref_message)
+    return render_template("recommendation.html", rows=rows, pref_rows=pref_rows, message=message,
+                           pref_message=pref_message)
 
 
 @bp.route("/test", methods=["GET", "POST"])
