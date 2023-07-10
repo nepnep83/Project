@@ -16,9 +16,14 @@ user_account = "user_account"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
+    jobs = []
     form = JobTitle()
     if form.validate_on_submit():
-        session['job_title'] = form.job_title.data
+        for i in range(1, 6):
+            if form["job_title_"+str(i)].data:
+                jobs.append(form["job_title_"+str(i)].data)
+        session["job_titles"] = jobs
+
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
@@ -43,25 +48,42 @@ def postcode():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    jobs = [session['job_title']]
-    interest = [session['pref_job']]
-    postcode = session['postcode']
-    data = job_vacancies.run(jobs, interest, 10, postcode, 5)
-    session['recommend_job_title1'] = data[0]['title']
-    session['recommend_job_summary1'] = data[0]['summary']
-    session['recommend_job_link1'] = data[0]['link']
-    session['recommend_job_title2'] = data[1]['title']
-    session['recommend_job_summary2'] = data[1]['summary']
-    session['recommend_job_link2'] = data[1]['link']
-    return render_template("summary.html", job_title=session['job_title'], pref_job=session['pref_job'],
+
+    return render_template("summary.html", job_titles=session['job_titles'], pref_job=session['pref_job'],
                            postcode=session['postcode'])
 
 
 @bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
-    return render_template("recommendation.html", job1=session['recommend_job_title1'],
-                           desc1=session['recommend_job_summary1'], link1=session['recommend_job_link1'], job2=session['recommend_job_title2'],
-                           desc2=session['recommend_job_summary2'], link2=session['recommend_job_link2'])
+    jobs = session['job_titles']
+    interest = session['pref_job']
+    postcode = session['postcode']
+    data_1, data_2 = job_vacancies.run(jobs, interest, 10, postcode, 5)
+
+    recommend_job_1 = data_1[0]
+    recommend_job_2 = data_1[1]
+    recommend_job_3 = data_1[2]
+    recommend_job_4 = data_1[3]
+    recommend_job_5 = data_1[4]
+    preferred_job_1 = data_2[0]
+    preferred_job_2 = data_2[1]
+    preferred_job_3 = data_2[2]
+
+    rows = [{'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
+            {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
+            {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
+            {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
+            {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
+    pref_rows = [{'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'], 'link': preferred_job_1['link']},
+                 {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'], 'link': preferred_job_2['link']},
+                 {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'], 'link': preferred_job_3['link']}]
+
+    return render_template("recommendation.html", rows=rows, pref_rows=pref_rows)
+
+
+@bp.route("/test", methods=["GET", "POST"])
+def summary_test():
+    return render_template("summary.html")
 
 
 @bp.route("/cookies", methods=["GET", "POST"])
@@ -95,9 +117,3 @@ def cookies():
             form.functional.data = cookies_policy["functional"]
             form.analytics.data = cookies_policy["analytics"]
     return render_template("cookies.html", form=form)
-
-
-def store_data(info):
-    ident = str(uuid.uuid4())
-    session['id'] = ident
-    print(session['id'])

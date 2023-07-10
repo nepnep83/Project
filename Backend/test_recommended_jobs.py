@@ -155,8 +155,8 @@ class MyTestCase(unittest.TestCase):
     @mock.patch('requests.get')
     def test_find_job(self, mocked_request):
         rev = ['1']
-        expected_data = ['Chief executives and senior officials']
-        mocked_request.return_value = Mock(text='{"soc":1115,"title":"Chief executives and senior officials"}',
+        expected_data = ['Chief executives', 'officials senior']
+        mocked_request.return_value = Mock(text='{"soc":1115,"add_titles":["Chief executives", "senior, officials"]}',
                                            status_code=200)
 
         actual_data = recommend_jobs.find_job(rev, job_num)
@@ -173,7 +173,7 @@ class MyTestCase(unittest.TestCase):
     def test_run(self, mocked_job, mocked_search, mocked_onet_interests,
                  mocked_onet_skills, mocked_onet, mocked_soc):
 
-        expected_data = [job]
+        expected_data = ([job], [job])
         mocked_job.return_value = [job]
         mocked_search.return_value = [1115]
         mocked_onet_interests.return_value = [skill_2]
@@ -187,7 +187,7 @@ class MyTestCase(unittest.TestCase):
         mocked_onet.assert_called_with('1')
         mocked_onet_skills.assert_called_with('2', [], 2)
         mocked_onet_interests.assert_called_with('2', 1)
-        mocked_search.assert_called_with(['2.A.1.a', '2.A.1.b'], ['1.B.1.a'])
+        mocked_search.assert_has_calls([mock.call(['2.A.1.a', '2.A.1.b'], ''), mock.call('', ['1.B.1.a'])])
         mocked_job.assert_called_with([1115], 1)
         self.assertEqual(expected_data, actual_data)
 

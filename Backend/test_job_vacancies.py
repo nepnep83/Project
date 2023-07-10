@@ -26,8 +26,8 @@ class MyTestCase(unittest.TestCase):
 
     @mock.patch('Backend.recommend_jobs.run')
     def test_get_recommended_jobs(self, mocked_recommendation):
-        expected_data = 'plumber'
-        mocked_recommendation.return_value = 'plumber'
+        expected_data = ('plumber', 'engineer')
+        mocked_recommendation.return_value = ('plumber', 'engineer')
 
         actual_data = job_vacancies.get_recommend_jobs(job, interest)
 
@@ -43,26 +43,27 @@ class MyTestCase(unittest.TestCase):
                           'location': {'location': 'BR1 3NN', 'city': '', 'area': '', 'postcode': '', 'country': ''},
                           'link': 'https://findajob.dwp.gov.uk/details/12181272'}]
 
-        actual_data = job_vacancies.find_vacancies(distance, location, job)
+        actual_data = job_vacancies.find_vacancies(distance, location, job, _range)
 
         mocked_api.assert_called_with(
             "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=1&location=2&keywords=3")
         self.assertEqual(expected_data_1, actual_data)
 
     @mock.patch('Backend.job_vacancies.find_vacancies')
-    @mock.patch('Backend.job_vacancies.get_claimant_info')
+    @mock.patch('Backend.job_vacancies.get_recommend_jobs')
     def test_run(self, mocked_info, mocked_vacancies):
-        mocked_info.return_value = ['10', 'da1']
+        mocked_info.return_value = ['plumber', 'engineer']
         mocked_vacancies.return_value = [
             {'id': 12181272, 'title': 'Plumber', 'summary': "Plumbers", 'company': 'Talent Finder',
              'activedate': {'start': '2023-05-15T15:31:00Z', 'end': '2023-06-14T15:31:00Z'},
              'location': {'location': 'BR1 3NN', 'city': '', 'area': '', 'postcode': '', 'country': ''},
              'link': 'https://findajob.dwp.gov.uk/details/12181272'}]
 
-        actual_data = job_vacancies.run(job, interest, place_holder_distance, place_holder_location, _range)
+        actual_data_1, actual_data_2 = job_vacancies.run(job, interest, place_holder_distance, place_holder_location, _range)
 
-        self.assertEqual(expected_data_1, actual_data)
-        mocked_vacancies.assert_called_with('10', 'da1', 'plumber')
+        self.assertEqual(expected_data_1, actual_data_1)
+        self.assertEqual(expected_data_1, actual_data_2)
+        mocked_vacancies.assert_has_calls([mock.call('10', 'da1', 'plumber', 1), mock.call('10', 'da1', 'engineer', 1)])
 
 
 if __name__ == '__main__':

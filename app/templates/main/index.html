@@ -1,27 +1,17 @@
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
-{% from "govuk_frontend_jinja/components/breadcrumbs/macro.html" import govukBreadcrumbs %}
-
 {% extends "base.html" %}
 
 {% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Work history{% endblock %}
 
 {% block beforeContent %}
-{{ super() }}
+  {{ super() }}
 {% endblock %}
 
 
 {% block content %}
-{{ govukBreadcrumbs({
-  'collapseOnMobile': true,
-  'items': [
-    {
-      'text': "Work history",
-      'href': "/"
-    }
-  ]
-}) }}
+
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -34,9 +24,33 @@
 
       {{ form.csrf_token }}
 
-      {{ form.job_title(params={
+      {{ form.job_title_1(params={
         'spellcheck': false,
         'autocomplete': 'Job title',
+        'classes': "govuk-input--width-10"
+      }) }}
+
+      {{ form.job_title_2(params={
+        'spellcheck': false,
+        'autocomplete': 'Job title 2',
+        'classes': "govuk-input--width-10"
+      }) }}
+
+      {{ form.job_title_3(params={
+        'spellcheck': false,
+        'autocomplete': 'Job title 3',
+        'classes': "govuk-input--width-10"
+      }) }}
+
+      {{ form.job_title_4(params={
+        'spellcheck': false,
+        'autocomplete': 'Job title 4',
+        'classes': "govuk-input--width-10"
+      }) }}
+
+      {{ form.job_title_5(params={
+        'spellcheck': false,
+        'autocomplete': 'Job title 5',
         'classes': "govuk-input--width-10"
       }) }}
 

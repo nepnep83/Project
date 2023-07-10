@@ -19,62 +19,64 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your recommended jobs</h1>
-    <!--{{ govukTable(
-      {
-        'head': [{'text': 'Job title',"rowspan": 1,
-                        "colspan": 1}, {'text': 'Description',"rowspan": 1,
-                        "colspan": 2}, {'text': 'Link',"rowspan": 1,
-                        "colspan": 3}],
-        'rows': [
-          [{'text': job1,"rowspan": 1,
-                        "colspan": 1}, {'text': desc1, "rowspan": 1,
-                        "colspan": 2}, {'text': 'link1',"rowspan": 1,
-                        "colspan": 3}],
+    <h2 class="govuk-heading-m">Based on your previous work history</h2>
 
-          [{'text': job2,"rowspan": 2,
-                        "colspan": 1}, {'text': desc2, "rowspan": 2,
-                        "colspan": 2}, {'text': link2, 'text': 'Job 2',"rowspan": 2,
-                        "colspan": 3}]
-        ]
-      }
-    )}}-->
+    {% set row_values = [] %}
+    {% for row in rows %}
+      {% set next_row =
+    {
+          'key': {
+            'text': row.job
+          },
+          'value': {
+            'html': row.desc[:100] + '<span class="govuk-body text" id=txt%s>'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="dots%s">'|format(loop.index|string) +'...</span><span class="govuk-link" id="more%s"> &ltshow more> </span>'|format(loop.index|string)
+          },
+          'actions': {
+            'items': [
+              {
+                'href': row.link,
+                'text': 'Job '+ loop.index|string,
+                'visuallyHiddenText': row.job
+              }
+            ]
+          }
+        }
+    %}
+    {{ row_values.append(next_row) or "" }}
+    {% endfor %}
+
     {{ govukSummaryList({
-      'rows': [
-        {
+      'rows': row_values
+    }) }}
+
+    <h2 class="govuk-heading-m">Based on your preferred jobs</h2>
+
+    {% set pref_row_values = [] %}
+    {% for row in pref_rows %}
+      {% set next_row =
+    {
           'key': {
-            'text': job1
+            'text': row.job
           },
           'value': {
-            'text': desc1
+            'html': row.desc[:100] + '<span class="govuk-body text" id="pref_txt%s">'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="pref_dots%s">'|format(loop.index|string) +'...</span> <span class="govuk-link" id="pref_more%s">'|format(loop.index|string) +' &ltshow more> </span>'
           },
           'actions': {
             'items': [
               {
-                'href': link1,
-                'text': 'Job 1',
-                'visuallyHiddenText': job1+" link"
+                'href': row.link,
+                'text': 'Job '+ loop.index|string,
+                'visuallyHiddenText': row.job+" link"
               }
             ]
           }
-        },
-        {
-          'key': {
-            'text': job2
-          },
-          'value': {
-            'text': desc2
-          },
-          'actions': {
-            'items': [
-              {
-                'href': link2,
-                'text': "Job 2",
-                'visuallyHiddenText': job2+"link"
-              }
-            ]
-          }
-        },
-      ]
+        }
+    %}
+    {{ pref_row_values.append(next_row) or "" }}
+    {% endfor %}
+
+    {{ govukSummaryList({
+      'rows': pref_row_values
     }) }}
 
     {{ govukButton({

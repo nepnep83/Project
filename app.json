@@ -27,7 +27,7 @@
     },
     "SERVICE_NAME": {
       "description": "Name of this service, e.g. Apply for driving licence, Apply for student visa, etc",
-      "value": "[name of service]"
+      "value": "Job Recommendation"
     },
     "SERVICE_PHASE": {
       "description": "Phase the service is currently in, e.g. Alpha, Beta, etc",
