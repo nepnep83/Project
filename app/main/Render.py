@@ -29,12 +29,12 @@ def index():
 
 
 @bp.route("/preferred", methods=["GET", "POST"])
-def preferred(classes='class'):
+def preferred():
     form = PrefJob()
     if form.validate_on_submit():
         session['pref_job'] = form.pref_job.data
         return redirect(url_for("main.postcode"))
-    return render_template("preferred.html", form=form, sample_text=classes, classes=classes)
+    return render_template("preferred.html", form=form)
 
 
 @bp.route("/postcode", methods=["GET", "POST"])

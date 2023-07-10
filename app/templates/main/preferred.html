@@ -1,5 +1,3 @@
-
-
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/radios/macro.html" import govukRadios %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
@@ -29,8 +27,6 @@
 
         {% set always = sample_text[:3] %}
         {% set optional = sample_text[3:] %}
-    <!--<p class="govuk-body">{{always}}<span class="govuk-body text" id="txt1">{{optional}}</span> <span class="govuk-body" id="dots1">...</span> <span class="govuk-link" id="more1"> &ltshow more> </span></p>
-        <p class="govuk-body">{{always}}<span class="govuk-body text" id="txt2">{{optional}}</span> <span class="govuk-body" id="dots2">...</span> <span class="govuk-link" id="more2"> &ltshow more> </span></p>-->
 
     {% set jobHtml %}
       {{ form.csrf_token }}
