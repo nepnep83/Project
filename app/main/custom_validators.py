@@ -91,7 +91,7 @@ class ValidPostcodeRequired:
             raise Exception('No postcode entered.')
 
         if self.postcode:
-            response = requests.get('https://findthatpostcode.uk/postcodes/' + postcode.data, verify=False)
+            response = requests.get('https://api.postcodes.io/postcodes/' + postcode.data, verify=False)
             if response.status_code == 200:
                 return
 
