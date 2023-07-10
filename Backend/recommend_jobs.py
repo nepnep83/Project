@@ -101,6 +101,7 @@ def reverse_search(skills, interests):
     for i in range(len(rev_data)):
         rev_data2 = rev_data[i]
         rev.append(rev_data2['likely_soc_codes'][0])
+
     return rev
 
 

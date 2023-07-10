@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovRadioInput, GovSubmitInput, GovTextInput
 from wtforms.fields import RadioField, SubmitField, StringField
 from wtforms.validators import InputRequired, Regexp, Length, Optional
-from app.main.custom_validators import ConditionalValidation
+from app.main.custom_validators import ConditionalValidation, OneInputRequired
 
 
 class JobTitle(FlaskForm):
@@ -17,7 +17,7 @@ class JobTitle(FlaskForm):
         description="Select one option.",
     )
 
-    job_title = StringField(
+    job_title_1 = StringField(
         "Job title",
         widget=GovTextInput(),
         validators=[
@@ -29,7 +29,7 @@ class JobTitle(FlaskForm):
                              regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                              message="Inputs must only contain alphabetical and selected special characters",
                          ),
-                         InputRequired()
+                         OneInputRequired(["job_title_2", "job_title_3", "job_title_4", "job_title_5"], "job title")
                          ])
                     ]
     )
@@ -45,7 +45,6 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
-                 InputRequired()
                  ])
         ]
     )
@@ -61,7 +60,6 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
-                 InputRequired()
                  ])
         ]
     )
@@ -77,7 +75,6 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
-                 InputRequired()
                  ])
         ]
     )
@@ -93,7 +90,6 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
-                 InputRequired()
                  ])
         ]
     )

@@ -16,13 +16,14 @@ user_account = "user_account"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
+    jobs = []
     form = JobTitle()
     if form.validate_on_submit():
-        session['job_title'] = form.job_title.data
-        session['job_title_2'] = form.job_title_2.data
-        session['job_title_3'] = form.job_title_3.data
-        session['job_title_4'] = form.job_title_4.data
-        session['job_title_5'] = form.job_title_5.data
+        for i in range(1, 6):
+            if form["job_title_"+str(i)].data:
+                jobs.append(form["job_title_"+str(i)].data)
+        session["job_titles"] = jobs
+
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
 
@@ -47,16 +48,15 @@ def postcode():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    return render_template("summary.html", job_title1=session['job_title'], job_title2=session['job_title_2'],
-                           job_title3=session['job_title_3'], job_title4=session['job_title_4'],
-                           job_title5=session['job_title_5'], pref_job=session['pref_job'],
+
+    return render_template("summary.html", job_titles=session['job_titles'], pref_job=session['pref_job'],
                            postcode=session['postcode'])
 
 
 @bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
-    jobs = [session['job_title'], session['job_title_2']]
-    interest = [session['pref_job']]
+    jobs = session['job_titles']
+    interest = session['pref_job']
     postcode = session['postcode']
     data_1, data_2 = job_vacancies.run(jobs, interest, 10, postcode, 5)
 

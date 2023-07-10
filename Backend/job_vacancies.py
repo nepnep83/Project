@@ -27,9 +27,9 @@ def find_vacancies(travel_distance, postcode, jobs, job_num):
             vacancies = common.api_call(
                 "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=" + str(
                     travel_distance) + "&location=" + postcode + "&keywords=" + job)
-            print(vacancies)
+            print("vacancies ", vacancies)
             _jobs.append(vacancies[0])
-            print(_jobs)
+            print("_jobs ", _jobs)
             if len(_jobs) >= job_num:
                 return _jobs
             else:
@@ -45,7 +45,7 @@ def run(jobs, interests, distance, location, _range):
     local_jobs_experience = find_vacancies(distance, location, recommended_jobs_experience, _range)
     local_jobs_preferred = find_vacancies(distance, location, recommended_jobs_preferred, _range)
 
-    print(local_jobs_experience)
+    print("local_jobs_experience ", local_jobs_experience)
     return local_jobs_experience, local_jobs_preferred
 
 
