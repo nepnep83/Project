@@ -1,3 +1,4 @@
+import requests
 from wtforms.validators import StopValidation
 
 
@@ -53,4 +54,28 @@ class OneInputRequired:
             message = self.message
 
         field.errors[:] = []
+        raise StopValidation(message)
+
+
+class ValidPostcodeRequired:
+    def __init__(self, postcode, message=None):
+        self.postcode = postcode
+        self.message = message
+
+    def __call__(self, form, field):
+        postcode = form._fields.get(self.postcode)
+
+        if self.postcode is None:
+            raise Exception('No postcode entered.')
+
+        if self.postcode:
+            data = requests.get('https://findthatpostcode.uk/postcodes/' + postcode.data, verify=False)
+            if data.status_code == 200:
+                return
+
+        if self.message is None:
+            message = field.gettext("A valid postcode in required.")
+        else:
+            message = self.message
+
         raise StopValidation(message)

@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovRadioInput, GovSubmitInput, GovTextInput
 from wtforms.fields import RadioField, SubmitField, StringField
 from wtforms.validators import InputRequired, Regexp, Length, Optional
-from app.main.custom_validators import ConditionalValidation, OneInputRequired
+from app.main.custom_validators import ConditionalValidation, OneInputRequired, ValidPostcodeRequired
 
 
 class JobTitle(FlaskForm):
@@ -134,7 +134,8 @@ class Postcode(FlaskForm):
                         regex=r"[a-zA-Z 0-9]*$",
                         message="Inputs must only contain alphanumeric characters",
                     ),
-                    InputRequired()
+                    InputRequired(),
+                    ValidPostcodeRequired("postcode")
                     ]
     )
     submit = SubmitField("Continue", widget=GovSubmitInput())
