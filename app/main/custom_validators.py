@@ -57,6 +57,28 @@ class OneInputRequired:
         raise StopValidation(message)
 
 
+class ValidJobsRequired:
+    def __init__(self, job_title, message=None):
+        self.job_title = job_title
+        self.message = message
+
+    def __call__(self, form, field):
+        job_title = form._fields.get(self.job_title)
+
+        if self.job_title:
+            response = requests.get('http://api.lmiforall.org.uk/api/v1/soc/search?q=' + job_title.data, verify=False)
+
+            if response.text != '[]':
+                return
+
+        if self.message is None:
+            message = field.gettext("Please enter a valid job title.")
+        else:
+            message = self.message
+
+        raise StopValidation(message)
+
+
 class ValidPostcodeRequired:
     def __init__(self, postcode, message=None):
         self.postcode = postcode
@@ -69,8 +91,8 @@ class ValidPostcodeRequired:
             raise Exception('No postcode entered.')
 
         if self.postcode:
-            data = requests.get('https://findthatpostcode.uk/postcodes/' + postcode.data, verify=False)
-            if data.status_code == 200:
+            response = requests.get('https://findthatpostcode.uk/postcodes/' + postcode.data, verify=False)
+            if response.status_code == 200:
                 return
 
         if self.message is None:

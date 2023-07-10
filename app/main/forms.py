@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovRadioInput, GovSubmitInput, GovTextInput
 from wtforms.fields import RadioField, SubmitField, StringField
 from wtforms.validators import InputRequired, Regexp, Length, Optional
-from app.main.custom_validators import ConditionalValidation, OneInputRequired, ValidPostcodeRequired
+from app.main.custom_validators import ConditionalValidation, OneInputRequired, ValidPostcodeRequired, ValidJobsRequired
 
 
 class JobTitle(FlaskForm):
@@ -29,7 +29,8 @@ class JobTitle(FlaskForm):
                              regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                              message="Inputs must only contain alphabetical and selected special characters",
                          ),
-                         OneInputRequired(["job_title_2", "job_title_3", "job_title_4", "job_title_5"], "job title")
+                         OneInputRequired(["job_title_2", "job_title_3", "job_title_4", "job_title_5"], "job title"),
+                         ValidJobsRequired('job_title_1')
                          ])
                     ]
     )
@@ -45,6 +46,7 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
+                 ValidJobsRequired('job_title_2')
                  ])
         ]
     )
@@ -60,6 +62,7 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
+                 ValidJobsRequired('job_title_3')
                  ])
         ]
     )
@@ -75,6 +78,7 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
+                 ValidJobsRequired('job_title_4')
                  ])
         ]
     )
@@ -90,6 +94,7 @@ class JobTitle(FlaskForm):
                      regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                      message="Inputs must only contain alphabetical and selected special characters",
                  ),
+                 ValidJobsRequired('job_title_5')
                  ])
         ]
     )
@@ -118,7 +123,8 @@ class PrefJob(FlaskForm):
                              regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                              message="Inputs must only contain alphabetical and selected special characters",
                          ),
-                         InputRequired()
+                         InputRequired(),
+                         ValidJobsRequired('pref_job')
                          ])
                     ]
     )

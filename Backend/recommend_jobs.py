@@ -127,6 +127,8 @@ def run(jobs, interests, _range, interests_range, job_num):
     top_skills = []
     top_interests = []
     skills_for_interests = []
+    jobs1 = ''
+    jobs2 = ''
 
     try:
         for job in jobs:
@@ -135,6 +137,10 @@ def run(jobs, interests, _range, interests_range, job_num):
 
             skills_onet = onet_skills(onet, skill_list.copy(), _range)
             skill_list.extend(skills_onet)
+    except Exception as e:
+        print(e)
+
+    try:
         for interest in interests:
             soc = get_soc_code(interest)
             onet = soc_to_onet(soc)
@@ -142,14 +148,17 @@ def run(jobs, interests, _range, interests_range, job_num):
 
     except Exception as e:
         print(e)
-    for i in range(_range):
-        top_skills.append(skill_list[i]['id'])
-    for i in range(interests_range):
-        top_interests.append(skills_for_interests[i]['id'])
-    rev_experience = reverse_search(top_skills, '')
-    rev_interest = reverse_search('', top_interests)
-    jobs1 = find_job(rev_experience, job_num)
-    jobs2 = find_job(rev_interest, job_num)
+
+    if len(jobs) > 0:
+        for i in range(_range):
+            top_skills.append(skill_list[i]['id'])
+        rev_experience = reverse_search(top_skills, '')
+        jobs1 = find_job(rev_experience, job_num)
+    if len(interests) > 0:
+        for i in range(interests_range):
+            top_interests.append(skills_for_interests[i]['id'])
+        rev_interest = reverse_search('', top_interests)
+        jobs2 = find_job(rev_interest, job_num)
     return jobs1, jobs2
 
 

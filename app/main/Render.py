@@ -19,10 +19,13 @@ def index():
     jobs = []
     form = JobTitle()
     if form.validate_on_submit():
-        for i in range(1, 6):
-            if form["job_title_"+str(i)].data:
-                jobs.append(form["job_title_"+str(i)].data)
-        session["job_titles"] = jobs
+        if form['radio'].data == 'yes':
+            for i in range(1, 6):
+                if form["job_title_"+str(i)].data:
+                    jobs.append(form["job_title_"+str(i)].data)
+            session["job_titles"] = jobs
+        else:
+            session['job_titles'] = []
 
         return redirect(url_for("main.preferred"))
     return render_template("index.html", form=form)
@@ -32,7 +35,10 @@ def index():
 def preferred():
     form = PrefJob()
     if form.validate_on_submit():
-        session['pref_job'] = form.pref_job.data
+        if form['radio'].data == 'yes':
+            session['pref_job'] = form.pref_job.data
+        else:
+            session['pref_job'] = ''
         return redirect(url_for("main.postcode"))
     return render_template("preferred.html", form=form)
 
@@ -58,27 +64,50 @@ def recommendation():
     jobs = session['job_titles']
     interest = session['pref_job']
     postcode = session['postcode']
-    data_1, data_2 = job_vacancies.run(jobs, interest, 10, postcode, 5)
+    message = ''
+    pref_message = ''
+    rows = []
+    pref_rows = []
+    if True:
+        if len(jobs) > 0:
+            if len(interest) > 0:
+                data_1, data_2 = job_vacancies.run(jobs, interest, 10, postcode, 5)
+            else:
+                pref_message = "We could not find any recommended jobs for you at the moment, please try again later."
+                data_1, data_2 = job_vacancies.run(jobs, [], 10, postcode, 5)
+        else:
+            if len(interest) > 0:
+                data_1, data_2 = job_vacancies.run([], interest, 10, postcode, 5)
+            else:
+                pref_message = "We could not find any recommended jobs for you at the moment, please try again later."
+            message = "We could not find any recommended jobs for you at the moment, please try again later."
+        try:
+            recommend_job_1 = data_1[0]
+            recommend_job_2 = data_1[1]
+            recommend_job_3 = data_1[2]
+            recommend_job_4 = data_1[3]
+            recommend_job_5 = data_1[4]
 
-    recommend_job_1 = data_1[0]
-    recommend_job_2 = data_1[1]
-    recommend_job_3 = data_1[2]
-    recommend_job_4 = data_1[3]
-    recommend_job_5 = data_1[4]
-    preferred_job_1 = data_2[0]
-    preferred_job_2 = data_2[1]
-    preferred_job_3 = data_2[2]
+            rows = [{'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
+                    {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
+                    {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
+                    {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
+                    {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
+        except:
+            message = "We could not find any recommended jobs for you at the moment, please try again later."
+        try:
+            preferred_job_1 = data_2[0]
+            preferred_job_2 = data_2[1]
+            preferred_job_3 = data_2[2]
 
-    rows = [{'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
-            {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
-            {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
-            {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
-            {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
-    pref_rows = [{'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'], 'link': preferred_job_1['link']},
-                 {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'], 'link': preferred_job_2['link']},
-                 {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'], 'link': preferred_job_3['link']}]
+            pref_rows = [
+                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'], 'link': preferred_job_1['link']},
+                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'], 'link': preferred_job_2['link']},
+                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'], 'link': preferred_job_3['link']}]
+        except:
+            pref_message = "We could not find any recommended jobs for you at the moment, please try again later."
 
-    return render_template("recommendation.html", rows=rows, pref_rows=pref_rows)
+    return render_template("recommendation.html", rows=rows, pref_rows=pref_rows, message=message, pref_message=pref_message)
 
 
 @bp.route("/test", methods=["GET", "POST"])
