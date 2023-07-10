@@ -21,8 +21,9 @@
     <h1 class="govuk-heading-l">Your recommended jobs</h1>
     <h2 class="govuk-heading-m">Based on your previous work history</h2>
 
-    {% set row_values = [] %}
-    {% for row in rows %}
+      {% if message == '' %}
+      {% set row_values = [] %}
+      {% for row in rows %}
       {% set next_row =
     {
           'key': {
@@ -44,6 +45,9 @@
     %}
     {{ row_values.append(next_row) or "" }}
     {% endfor %}
+      {% else %}
+      <p class="govuk-body">{{ message }}</p>
+      {% endif %}
 
     {{ govukSummaryList({
       'rows': row_values
@@ -51,6 +55,7 @@
 
     <h2 class="govuk-heading-m">Based on your preferred jobs</h2>
 
+    {% if pref_message == '' %}
     {% set pref_row_values = [] %}
     {% for row in pref_rows %}
       {% set next_row =
@@ -74,13 +79,12 @@
     %}
     {{ pref_row_values.append(next_row) or "" }}
     {% endfor %}
+      {% else %}
+      <p class="govuk-body">{{ pref_message }}</p>
+      {% endif %}
 
     {{ govukSummaryList({
       'rows': pref_row_values
-    }) }}
-
-    {{ govukButton({
-      'text': "Save and continue"
     }) }}
 
   </div>
