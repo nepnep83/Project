@@ -12,6 +12,15 @@ user_account = "user_account"
 
 
 @bp.route("/", methods=["GET", "POST"])
+def postcode():
+    form = Postcode()
+    if form.validate_on_submit():
+        session['postcode'] = form.postcode.data
+        return redirect(url_for("main.index"))
+    return render_template("postcode.html", form=form)
+
+
+@bp.route("/work history", methods=["GET", "POST"])
 def index():
     jobs = []
     form = JobTitle()
@@ -36,17 +45,8 @@ def preferred():
             session['pref_job'] = form.pref_job.data
         else:
             session['pref_job'] = ''
-        return redirect(url_for("main.postcode"))
-    return render_template("preferred.html", form=form)
-
-
-@bp.route("/postcode", methods=["GET", "POST"])
-def postcode():
-    form = Postcode()
-    if form.validate_on_submit():
-        session['postcode'] = form.postcode.data
         return redirect(url_for("main.summary"))
-    return render_template("postcode.html", form=form)
+    return render_template("preferred.html", form=form)
 
 
 @bp.route("/summary", methods=["GET", "POST"])

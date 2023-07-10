@@ -1,16 +1,12 @@
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
-{%- from 'govuk_frontend_jinja/components/back-link/macro.html' import govukBackLink -%}
 {% extends "base.html" %}
 
 {% block pageTitle %}{%- if form.errors %}Error: {% endif -%}Postcode{% endblock %}
 
 {% block beforeContent %}
   {{ super() }}
-  {{ govukBackLink({
-    'text': "Back",
-    'href': url_for('main.preferred')
-  }) }}
+
 {% endblock %}
 
 
