@@ -68,6 +68,7 @@ def recommendation():
     preferred_job_1 = data_2[0]
     preferred_job_2 = data_2[1]
     preferred_job_3 = data_2[2]
+    session.clear()
 
     rows = [{'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
             {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
