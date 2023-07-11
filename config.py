@@ -14,5 +14,3 @@ class Config(object):
     SERVICE_URL = os.environ.get("SERVICE_URL")
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SECURE = True
-    SESSION_TYPE = 'filesystem'
-

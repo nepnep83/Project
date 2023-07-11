@@ -26,6 +26,7 @@ def work_history():
     jobs = []
     form = JobTitle()
     session['message'] = ''
+    session['rows'] = ''
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
             for i in range(1, 6):
@@ -61,6 +62,7 @@ def work_history():
 def preferred():
     form = PrefJob()
     session['pref_message'] = ''
+    session['pref_rows'] = ''
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
             session['pref_job'] = form.pref_job.data
