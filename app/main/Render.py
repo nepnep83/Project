@@ -1,5 +1,4 @@
 from flask import render_template, request, redirect, url_for, session, flash, make_response
-from flask_session import Session
 import json
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
