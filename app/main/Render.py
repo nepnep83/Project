@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, url_for, session, flash, make_response
+from flask_session import Session
 import json
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
@@ -24,6 +25,7 @@ def index():
 def work_history():
     jobs = []
     form = JobTitle()
+    session['message'] = ''
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
             for i in range(1, 6):
@@ -58,6 +60,7 @@ def work_history():
 @bp.route("/preferred", methods=["GET", "POST"])
 def preferred():
     form = PrefJob()
+    session['pref_message'] = ''
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
             session['pref_job'] = form.pref_job.data
@@ -95,11 +98,6 @@ def summary():
 def recommendation():
     return render_template("recommendation.html", rows=session['rows'], pref_rows=session['pref_rows'],
                            message=session['message'], pref_message=session['pref_message'])
-
-
-@bp.route("/test", methods=["GET", "POST"])
-def summary_test():
-    return render_template("summary.html")
 
 
 @bp.route("/cookies", methods=["GET", "POST"])
