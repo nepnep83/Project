@@ -1,2 +1,3 @@
 ./app/static/.*
 ./app/static/dist
+./flask_session
