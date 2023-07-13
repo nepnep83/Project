@@ -53,7 +53,6 @@ def add_new_skills_and_sort(skills, new_skills):
         else:
             for skill in skills:
                 if skill['id'] == new_skill['id']:
-
                     skill['value'] += new_skill['value']
 
     skills.sort(reverse=True, key=common.key)
@@ -106,7 +105,7 @@ def run(jobs, no_of_jobs):
     print('here ', skills)
     if skills:
         minimum_value = skills[0]['value'] - skills[round(len(skills) * 0.70)]['value']
-        maximum_value = skills[0]['value']  # - skill_list[len(skill_list)-1]['value']
+        maximum_value = skills[0]['value'] - skills[round(len(skills) * 0.90)]['value']
         print(skills)
         print(minimum_value)
         print(maximum_value)
