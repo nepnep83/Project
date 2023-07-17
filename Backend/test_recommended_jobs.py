@@ -83,7 +83,7 @@ class MyTestCase(unittest.TestCase):
             {"id": "2.A.1.b", "name": "Active Listening", "value": 3.62}]}]}
         mocked_sort.return_value = ['2.A.1.a', '2.A.1.b']
 
-        actual_data = recommend_jobs.onet_skills(onet_1, skill_list, _range)
+        actual_data = recommend_jobs.get_skills_from_onet_code(onet_1, _range)
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/skills/53-6041.00', verify=False)
         mocked_sort.assert_called_with([{"id": "2.A.1.a", "name": "Reading Comprehension", "value": 4.0},
@@ -99,7 +99,7 @@ class MyTestCase(unittest.TestCase):
                                             {'id': 'OI', 'interests': [
                                                 {'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]}]}
 
-        actual_data = recommend_jobs.onet_interests(onet_1, 1)
+        actual_data = recommend_jobs.get_interests_from_onet_code(onet_1, 1)
 
         mock_api.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/interests/53-6041.00')
         self.assertEqual(expected_data, actual_data)
@@ -108,7 +108,7 @@ class MyTestCase(unittest.TestCase):
         skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
         expected_data = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
 
-        actual_data = recommend_jobs.skill_sort([skill_1], skill_list)
+        actual_data = recommend_jobs.add_new_skills_and_sort([skill_1], skill_list)
 
         self.assertEqual(expected_data, actual_data)
 
@@ -117,7 +117,7 @@ class MyTestCase(unittest.TestCase):
         test_skill = [{'id': '2.A.1.a', 'name': 'writing Comprehension', 'value': 3.0}]
         expected_data = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
 
-        actual_data = recommend_jobs.skill_sort(test_skill, skill_list)
+        actual_data = recommend_jobs.add_new_skills_and_sort(test_skill, skill_list)
 
         self.assertEqual(expected_data, actual_data)
 
@@ -127,7 +127,7 @@ class MyTestCase(unittest.TestCase):
         expected_data = [{"id": "2.A.1.b", "name": "Active Listening", "value": 67.62},
                          {'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
 
-        actual_data = recommend_jobs.skill_sort(skill, skill_list)
+        actual_data = recommend_jobs.add_new_skills_and_sort(skill, skill_list)
 
         self.assertEqual(expected_data, actual_data)
 
@@ -135,21 +135,20 @@ class MyTestCase(unittest.TestCase):
         skill = [skill_1, skill_3]
         expected_data = ['2.A.1.a', '2.A.1.b']
 
-        actual_data = recommend_jobs.get_ids(skill)
+        actual_data = recommend_jobs.get_skills_ids(skill)
 
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
     def test_reverse_search(self, mocked_request):
         skills = '1'
-        interests = '1'
         expected_data = [1115]
         mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
                                                 '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}',
                                            status_code=200)
-        actual_data = recommend_jobs.reverse_search(skills, interests)
+        actual_data = recommend_jobs.get_recommended_soc_codes(skills)
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
-                                          '%2C100%2C100&interests=1&skills=1', verify=False)
+                                          '%2C100%2C100&skills=1', verify=False)
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
@@ -159,7 +158,7 @@ class MyTestCase(unittest.TestCase):
         mocked_request.return_value = Mock(text='{"soc":1115,"add_titles":["Chief executives", "senior, officials"]}',
                                            status_code=200)
 
-        actual_data = recommend_jobs.find_job(rev, job_num)
+        actual_data = recommend_jobs.get_recommended_jobs(rev, job_num)
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/code/1', verify=False)
         self.assertEqual(expected_data, actual_data)
@@ -181,7 +180,7 @@ class MyTestCase(unittest.TestCase):
         mocked_onet.return_value = '2'
         mocked_soc.return_value = '1'
 
-        actual_data = recommend_jobs.run(job, interest, _range, interests_range, job_num)
+        actual_data = recommend_jobs.run(job, _range)
 
         mocked_soc.assert_called_with('engineer')
         mocked_onet.assert_called_with('1')
