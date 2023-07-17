@@ -40,12 +40,12 @@ def find_vacancies(travel_distance, postcode, recommended_soc_codes, job_num):
         current_title_counter = 0
         try:
             vacancies = "too many calls"
-            while vacancies == "too many calls" or vacancies == "not found":
+            while vacancies == "too many calls" or vacancies == "not found" or len(vacancies) == 0:
                 vacancies = common.api_call(
                     "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=" + str(
                         travel_distance) + "&location=" + postcode + "&keywords=" + job_titles[current_title_counter])
-                time.sleep(2)
-                if vacancies == "not found":
+                time.sleep(1)
+                if vacancies == "not found" or len(vacancies) == 0:
                     current_title_counter += 1
             found_vacancies.append(vacancies[0])
             if len(vacancies) > 1:
@@ -61,7 +61,7 @@ def find_vacancies(travel_distance, postcode, recommended_soc_codes, job_num):
 
 
 def run(jobs, distance_to_job, location_of_claimant, _range):
-    recommended_soc_codes = recommend_jobs.run(jobs, _range)
+    recommended_soc_codes = recommend_jobs.run(jobs)
     local_jobs_experience = find_vacancies(distance_to_job, location_of_claimant, recommended_soc_codes, _range)
 
     print("local_jobs_experience ", local_jobs_experience)

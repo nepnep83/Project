@@ -20,6 +20,14 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Your recommended jobs</h1>
     <h2 class="govuk-heading-m">Based on your previous work history</h2>
+      <h3 class="govuk-heading-s">Job titles: </h3>
+        <ul class="govuk-list govuk-list--bullet">
+            {% for title in titles %}
+            <li>{{title}}</li>
+            {% endfor %}
+
+        </ul>
+        <h3 class="govuk-heading-s">Job vacancies: </h3>
 
       {% if message == '' %}
       {% set row_values = [] %}

@@ -3,10 +3,12 @@ import json
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
 
+from Backend.job_vacancies import find_vacancies
+from Backend.recommend_jobs import get_recommended_jobs
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
-from Backend import job_vacancies
+from Backend import job_vacancies, recommend_jobs
 
 NO_JOBS_FOUND_MESSAGE = "We could not find any recommended jobs for you at the moment, please try again later."
 
@@ -44,7 +46,9 @@ def work_history():
             session['job_titles'] = []
 
         if len(jobs) > 0:
-            recommend_job = job_vacancies.run(jobs, 10, session['postcode'], 5)
+            recommended_soc_codes = recommend_jobs.run(jobs)
+            recommend_job = find_vacancies(10, session['postcode'], recommended_soc_codes, 5)
+            session['titles'] = [get_recommended_jobs([recommended_soc_codes[i]], 1)[0] for i in range(5)]
 
             recommend_job_1 = recommend_job[0]
             recommend_job_2 = recommend_job[1]
@@ -105,8 +109,9 @@ def summary():
 
 @bp.route("/recommendation", methods=["GET", "POST"])
 def recommendation():
-    return render_template("recommendation.html", rows=session['rows'], pref_rows=session['pref_rows'],
-                           message=session['message'], pref_message=session['pref_message'])
+    return render_template("recommendation.html", titles=session['titles'], rows=session['rows'],
+                           pref_rows=session['pref_rows'], message=session['message'],
+                           pref_message=session['pref_message'])
 
 
 @bp.route("/accessibility", methods=["GET"])

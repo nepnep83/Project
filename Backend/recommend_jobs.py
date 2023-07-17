@@ -63,6 +63,7 @@ def get_skills_ids(skills):
 
 
 def get_recommended_soc_codes(skills):
+    print(skills)
     recommended_soc_codes = []
     rev_results = common.api_call(
         'https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100%2C100%2C100&skills=' + ",".join(skills)
@@ -70,7 +71,9 @@ def get_recommended_soc_codes(skills):
     for result in rev_results:
         recommended_soc_codes.extend(result['likely_soc_codes'])
 
-    return list(set(recommended_soc_codes))
+    seen = set()
+    seen_add = seen.add
+    return [x for x in recommended_soc_codes if not (x in seen or seen_add(x))]
 
 
 def get_recommended_jobs(recommended_soc_codes, no_of_jobs):
@@ -88,9 +91,8 @@ def get_recommended_jobs(recommended_soc_codes, no_of_jobs):
     return recommended_jobs
 
 
-def run(jobs, no_of_jobs):
+def run(jobs):
     skills = []
-    top_skills = []
 
     try:
         for job in jobs:
@@ -104,19 +106,11 @@ def run(jobs, no_of_jobs):
 
     print('here ', skills)
     if skills:
-        minimum_value = skills[0]['value'] - skills[round(len(skills) * 0.70)]['value']
-        maximum_value = skills[0]['value'] - skills[round(len(skills) * 0.90)]['value']
+        minimum_value = skills[0]['value'] - skills[round(len(skills) * 0.5)]['value']
         print(skills)
         print(minimum_value)
-        print(maximum_value)
-        for skill in skills:
-            print(skill)
-            print(skill['value'])
-            if minimum_value <= skill['value'] <= maximum_value:
-                print('output')
-                top_skills.append(skill['id'])
-        rev_experience = get_recommended_soc_codes(top_skills)
-        return get_recommended_jobs(rev_experience, no_of_jobs)
+        top_skills = [skill['id'] for skill in skills if minimum_value <= skill['value']]
+        return get_recommended_soc_codes(top_skills)
 
 
 if __name__ == "__main__":
