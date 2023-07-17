@@ -1,0 +1,26 @@
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% extends "base.html" %}
+
+{% block beforeContent %}
+  {{ super() }}
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Help us understand your work situation</h1>
+    <p class="govuk-body" id="body">Your answers will help us provide recommended jobs and local vacancies for you</p>
+
+    {{ govukButton({
+      'text': "Next",
+      'href': "/postcode"
+    }) }}
+
+  </div>
+</div>
+
+{% endblock %}

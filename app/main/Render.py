@@ -16,6 +16,11 @@ user_account = "user_account"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
+    return render_template("main.html",)
+
+
+@bp.route("/postcode", methods=["GET", "POST"])
+def postcode():
     form = Postcode()
     if form.validate_on_submit():
         session['postcode'] = form.postcode.data
