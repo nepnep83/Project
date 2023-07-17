@@ -1,5 +1,8 @@
 from flask import render_template, request, redirect, url_for, session, flash, make_response
 import json
+from flask_wtf.csrf import CSRFError
+from werkzeug.exceptions import HTTPException
+
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
@@ -54,7 +57,7 @@ def work_history():
             session['message'] = NO_JOBS_FOUND_MESSAGE
 
         return redirect(url_for("main.preferred"))
-    return render_template("index.html", form=form)
+    return render_template("work_history.html", form=form)
 
 
 @bp.route("/preferred", methods=["GET", "POST"])
@@ -101,6 +104,11 @@ def recommendation():
                            message=session['message'], pref_message=session['pref_message'])
 
 
+@bp.route("/accessibility", methods=["GET"])
+def accessibility():
+    return render_template("accessibility.html")
+
+
 @bp.route("/cookies", methods=["GET", "POST"])
 def cookies():
     form = CookiesForm()
@@ -132,3 +140,19 @@ def cookies():
             form.functional.data = cookies_policy["functional"]
             form.analytics.data = cookies_policy["analytics"]
     return render_template("cookies.html", form=form)
+
+
+@bp.route("/privacy", methods=["GET"])
+def privacy():
+    return render_template("privacy.html")
+
+
+@bp.app_errorhandler(HTTPException)
+def http_exception(error):
+    return render_template(f"{error.code}.html"), error.code
+
+
+@bp.app_errorhandler(CSRFError)
+def csrf_error(error):
+    flash("The form you were submitting has expired. Please try again.")
+    return redirect(request.full_path)

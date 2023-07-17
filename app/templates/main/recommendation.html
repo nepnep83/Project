@@ -30,7 +30,7 @@
             'text': row.job
           },
           'value': {
-            'html': row.desc[:100] + '<span class="govuk-body text" id=txt%s>'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="dots%s">'|format(loop.index|string) +'...</span><span class="govuk-link" id="more%s"> &ltshow more> </span>'|format(loop.index|string)
+            'html': row.desc[:100] + '<span class="govuk-body text" id=txt%s>'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="dots%s">'|format(loop.index|string) +'...</span> <span class="govuk-link" id="more%s">&ltshow more> </span>'|format(loop.index|string)
           },
           'actions': {
             'items': [
