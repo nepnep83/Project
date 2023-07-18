@@ -37,7 +37,8 @@ def get_skills_from_onet_code(onet):
     skills_response = requests.get('https://api.lmiforall.org.uk/api/v1/o-net/skills/' + str(onet), verify=False)
     skills = skills_response.json()['scales'][0]['skills']
     skills.sort(reverse=True, key=common.key)
-    return skills
+    minimum_value = skills[0]['value'] - 1
+    return [skill for skill in skills if minimum_value <= skill['value']]
 
 
 def add_new_skills_and_sort(skills, new_skills):
@@ -63,17 +64,18 @@ def get_skills_ids(skills):
 
 
 def get_recommended_soc_codes(skills):
-    print(skills)
     recommended_soc_codes = []
+    job_titles = []
     rev_results = common.api_call(
         'https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100%2C100%2C100&skills=' + ",".join(skills)
     )['results']
     for result in rev_results:
         recommended_soc_codes.extend(result['likely_soc_codes'])
+        job_titles.append(result['title'])
 
     seen = set()
     seen_add = seen.add
-    return [x for x in recommended_soc_codes if not (x in seen or seen_add(x))]
+    return [x for x in recommended_soc_codes if not (x in seen or seen_add(x))], [x for x in job_titles if not (x in seen or seen_add(x))][:5]
 
 
 def get_recommended_jobs(recommended_soc_codes, no_of_jobs):
@@ -87,7 +89,6 @@ def get_recommended_jobs(recommended_soc_codes, no_of_jobs):
         for job in job_titles:
             recommended_jobs.append(job)
 
-    print("Your recommended jobs are ", recommended_jobs)
     return recommended_jobs
 
 
@@ -101,16 +102,14 @@ def run(jobs):
 
             new_skills = get_skills_from_onet_code(onet)
             add_new_skills_and_sort(skills, new_skills)
+
     except Exception as e:
         print(e)
 
-    print('here ', skills)
     if skills:
-        minimum_value = skills[0]['value'] - skills[round(len(skills) * 0.5)]['value']
-        print(skills)
-        print(minimum_value)
-        top_skills = [skill['id'] for skill in skills if minimum_value <= skill['value']]
-        return get_recommended_soc_codes(top_skills)
+        minimum_value = skills[0]['value'] - len(jobs)
+        top_skills_ids = [skill['id'] for skill in skills if minimum_value <= skill['value']]
+        return get_recommended_soc_codes(top_skills_ids)
 
 
 if __name__ == "__main__":

@@ -3,13 +3,13 @@ import json
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
 
-from Backend.job_vacancies import find_vacancies
-from Backend.recommend_jobs import get_recommended_jobs
+from Backend.job_vacancies import get_vacancies_from_soc_codes, get_vacancies_from_titles
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
-from Backend import job_vacancies, recommend_jobs
+from Backend import recommend_jobs
 
+NOT_PROVIDED = "Not provided"
 NO_JOBS_FOUND_MESSAGE = "We could not find any recommended jobs for you at the moment, please try again later."
 
 user_info = "user_info"
@@ -32,7 +32,7 @@ def postcode():
 
 @bp.route("/work_history", methods=["GET", "POST"])
 def work_history():
-    jobs = []
+    inputted_jobs = []
     form = JobTitle()
     session['message'] = ''
     session['rows'] = ''
@@ -40,28 +40,22 @@ def work_history():
         if form['radio'].data == 'yes':
             for i in range(1, 6):
                 if form["job_title_" + str(i)].data:
-                    jobs.append(form["job_title_" + str(i)].data)
-            session["job_titles"] = jobs
+                    inputted_jobs.append(form["job_title_" + str(i)].data)
+            session["job_titles"] = inputted_jobs
         else:
             session['job_titles'] = []
 
-        if len(jobs) > 0:
-            recommended_soc_codes = recommend_jobs.run(jobs)
-            recommend_job = find_vacancies(10, session['postcode'], recommended_soc_codes, 5)
-            session['titles'] = [get_recommended_jobs([recommended_soc_codes[i]], 1)[0] for i in range(5)]
+        if len(inputted_jobs) > 0:
+            recommended_soc_codes, recommended_titles = recommend_jobs.run(inputted_jobs)
+            session['titles'] = recommended_titles
 
-            recommend_job_1 = recommend_job[0]
-            recommend_job_2 = recommend_job[1]
-            recommend_job_3 = recommend_job[2]
-            recommend_job_4 = recommend_job[3]
-            recommend_job_5 = recommend_job[4]
+            recommended_jobs = []
+            get_vacancies_from_titles(inputted_jobs, session['postcode'], recommended_jobs)
+            get_vacancies_from_titles(recommended_titles, session['postcode'], recommended_jobs)
+            get_vacancies_from_soc_codes(recommended_soc_codes, session['postcode'], recommended_jobs)
 
-            session['rows'] = [
-                {'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
-                {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
-                {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
-                {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
-                {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
+            session['rows'] = [{'desc': recommend_job['summary'], 'job': recommend_job['title'], 'link': recommend_job['link']}
+                               for recommend_job in recommended_jobs]
         else:
             session['message'] = NO_JOBS_FOUND_MESSAGE
 
@@ -85,8 +79,8 @@ def preferred():
             session['pref_job_titles'] = []
 
         if len(session['pref_job']) > 0:
-            preferred_soc_codes = recommend_jobs.run(jobs)
-            session['pref_titles'] = [get_recommended_jobs([preferred_soc_codes[i]], 1)[0] for i in range(5)]
+            recommended_pref_soc_codes, recommended_pref_titles = recommend_jobs.run(jobs)
+            session['pref_titles'] = recommended_pref_titles
         else:
             session['pref_message'] = NO_JOBS_FOUND_MESSAGE
         return redirect(url_for("main.summary"))
@@ -95,14 +89,19 @@ def preferred():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    return render_template("summary.html", job_titles=session['job_titles'], pref_job=session['pref_job'],
+    return render_template("summary.html",
+                           job_titles=session['job_titles'] if session['job_titles'] != "" else NOT_PROVIDED,
+                           pref_job=session['pref_job'] if session['pref_job'] != "" else NOT_PROVIDED,
                            postcode=session['postcode'])
 
 
 @bp.route("/recommended_titles", methods=["GET", "POST"])
 def recommended_titles():
-    return render_template("recommended_titles.html", titles=session['titles'], pref_titles=session['pref_titles'],
-                           message=session['message'], pref_message=session['pref_message'])
+    return render_template("recommended_titles.html",
+                           titles=session['titles'],
+                           pref_titles=session['pref_titles'] if 'pref_titles' in session.keys() else '',
+                           message=session['message'],
+                           pref_message=session['pref_message'])
 
 
 @bp.route("/recommended_vacancies", methods=["GET", "POST"])
