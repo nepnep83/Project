@@ -21,7 +21,7 @@ def update_num_checked(soc_code, num_checked):
 
 def get_titles(soc_code):
     titles = soc_table.get({"soc_code": soc_code}, ["job_titles"])
-    return titles[0].split(';') if (titles is not None and titles[0] is not None) else []
+    return titles[0][0].split(';') if (titles is not None and titles[0] is not None) else []
 
 
 def get_num_checked(soc_code):
