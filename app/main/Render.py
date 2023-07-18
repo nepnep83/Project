@@ -71,32 +71,24 @@ def work_history():
 
 @bp.route("/preferred", methods=["GET", "POST"])
 def preferred():
+    jobs = []
     form = PrefJob()
     session['pref_message'] = ''
     session['pref_rows'] = ''
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
-            session['pref_job'] = form.pref_job.data
-            print(session['pref_job'])
+            for i in range(1, 6):
+                if form["pref_job_" + str(i)].data:
+                    jobs.append(form["pref_job_" + str(i)].data)
+            session["pref_job_titles"] = jobs
         else:
-            session['pref_job'] = ''
+            session['pref_job_titles'] = []
 
         if len(session['pref_job']) > 0:
-            preferred_job = job_vacancies.run(session['pref_job'], 10, session['postcode'], 3)
-            preferred_job_1 = preferred_job[0]
-            preferred_job_2 = preferred_job[1]
-            preferred_job_3 = preferred_job[2]
-
-            session['pref_rows'] = [
-                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'],
-                 'link': preferred_job_1['link']},
-                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'],
-                 'link': preferred_job_2['link']},
-                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'],
-                 'link': preferred_job_3['link']}]
+            preferred_soc_codes = recommend_jobs.run(jobs)
+            session['pref_titles'] = [get_recommended_jobs([preferred_soc_codes[i]], 1)[0] for i in range(5)]
         else:
             session['pref_message'] = NO_JOBS_FOUND_MESSAGE
-        print(session)
         return redirect(url_for("main.summary"))
     return render_template("preferred.html", form=form)
 
@@ -107,11 +99,15 @@ def summary():
                            postcode=session['postcode'])
 
 
-@bp.route("/recommendation", methods=["GET", "POST"])
-def recommendation():
-    return render_template("recommendation.html", titles=session['titles'], rows=session['rows'],
-                           pref_rows=session['pref_rows'], message=session['message'],
-                           pref_message=session['pref_message'])
+@bp.route("/recommended_titles", methods=["GET", "POST"])
+def recommended_titles():
+    return render_template("recommended_titles.html", titles=session['titles'], pref_titles=session['pref_titles'],
+                           message=session['message'], pref_message=session['pref_message'])
+
+
+@bp.route("/recommended_vacancies", methods=["GET", "POST"])
+def recommended_vacancies():
+    return render_template("recommended_vacancies.html", rows=session['rows'], message=session['message'])
 
 
 @bp.route("/accessibility", methods=["GET"])

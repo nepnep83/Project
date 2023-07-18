@@ -1,0 +1,55 @@
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
+{%- from 'govuk_frontend_jinja/components/back-link/macro.html' import govukBackLink -%}
+{%- from 'govuk_frontend_jinja/components/table/macro.html' import govukTable -%}
+
+{% extends "base.html" %}
+
+{% block beforeContent %}
+  {{ super() }}
+  {{ govukBackLink({
+    'text': "Back",
+    'href': url_for('main.summary')
+  }) }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Your recommended job titles</h1>
+    <h2 class="govuk-heading-m">Based on your previous work history:</h2>
+      {% if message == '' %}
+        <ul class="govuk-list govuk-list--bullet">
+            {% for title in titles %}
+            <li>{{title}}</li>
+            {% endfor %}
+
+        </ul>
+
+      {% else %}
+      <p class="govuk-body">{{ message }}</p>
+      {% endif %}
+
+
+    <h2 class="govuk-heading-m">Based on your preferred jobs:</h2>
+      {% if pref_message == '' %}
+        <ul class="govuk-list govuk-list--bullet">
+            {% for title in pref_titles %}
+            <li>{{title}}</li>
+            {% endfor %}
+        </ul>
+
+      {% else %}
+      <p class="govuk-body">{{ pref_message }}</p>
+      {% endif %}
+
+      {{ govukButton({
+      'text': "Save and continue",
+      'href': "/recommended_vacancies"
+      }) }}
+
+  </div>
+</div>
+{% endblock %}

@@ -28,10 +28,33 @@
     {% set jobHtml %}
       {{ form.csrf_token }}
 
-      {{ form.pref_job(params={
+      {{ form.pref_job_1(params={
           'classes': 'govuk-input--width-10',
-          'inputmode': 'numeric',
-          'pattern': '[0-9]*',
+          'autocomplete': 'Job title 1',
+          'spellcheck': false
+        }) }}
+
+        {{ form.pref_job_2(params={
+          'classes': 'govuk-input--width-10',
+        'autocomplete': 'Job title 2',
+          'spellcheck': false
+        }) }}
+
+        {{ form.pref_job_3(params={
+          'classes': 'govuk-input--width-10',
+          'autocomplete': 'Job title 3',
+          'spellcheck': false
+        }) }}
+
+        {{ form.pref_job_4(params={
+          'classes': 'govuk-input--width-10',
+          'autocomplete': 'Job title 4',
+          'spellcheck': false
+        }) }}
+
+        {{ form.pref_job_5(params={
+          'classes': 'govuk-input--width-10',
+          'autocomplete': 'Job title 5',
           'spellcheck': false
         }) }}
 
