@@ -43,7 +43,7 @@ def work_history():
                     inputted_jobs.append(form["job_title_" + str(i)].data)
             session["job_titles"] = inputted_jobs
         else:
-            session['job_titles'] = []
+            session["job_titles"] = []
 
         if len(inputted_jobs) > 0:
             recommended_soc_codes, recommended_titles = recommend_jobs.run(inputted_jobs)
@@ -76,9 +76,9 @@ def preferred():
                     jobs.append(form["pref_job_" + str(i)].data)
             session["pref_job_titles"] = jobs
         else:
-            session['pref_job_titles'] = []
+            session["pref_job_titles"] = []
 
-        if len(session['pref_job']) > 0:
+        if len(jobs) > 0:
             recommended_pref_soc_codes, recommended_pref_titles = recommend_jobs.run(jobs)
             session['pref_titles'] = recommended_pref_titles
         else:
@@ -89,9 +89,10 @@ def preferred():
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
+    print(session)
     return render_template("summary.html",
-                           job_titles=session['job_titles'] if session['job_titles'] != "" else NOT_PROVIDED,
-                           pref_job=session['pref_job'] if session['pref_job'] != "" else NOT_PROVIDED,
+                           job_titles=session['job_titles'] if session['job_titles'] != [] else [NOT_PROVIDED],
+                           pref_job=session['pref_job_titles'] if session['pref_job_titles'] != [] else [NOT_PROVIDED],
                            postcode=session['postcode'])
 
 
