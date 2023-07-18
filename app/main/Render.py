@@ -1,3 +1,5 @@
+import threading
+
 from flask import render_template, request, redirect, url_for, session, flash, make_response
 import json
 from flask_wtf.csrf import CSRFError
@@ -8,9 +10,12 @@ from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
 from Backend import recommend_jobs
+from sql.vacancy_table import insert_history, delete_session_data, get_vacancy_rows
 
+REFRESH_MESSAGE = "Vacancies are still being calculated. Please refresh."
+ENTER_WORK_HISTORY = "Please enter work history to receive recommended job vacancies."
 NOT_PROVIDED = "Not provided"
-NO_JOBS_FOUND_MESSAGE = "We could not find any recommended jobs for you at the moment, please try again later."
+NO_JOBS_ENTERED = "Please provide {} in order to receive recommended job titles."
 
 user_info = "user_info"
 user_account = "user_account"
@@ -18,7 +23,7 @@ user_account = "user_account"
 
 @bp.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("main.html",)
+    return render_template("main.html", )
 
 
 @bp.route("/postcode", methods=["GET", "POST"])
@@ -32,11 +37,13 @@ def postcode():
 
 @bp.route("/work_history", methods=["GET", "POST"])
 def work_history():
-    inputted_jobs = []
     form = JobTitle()
-    session['message'] = ''
-    session['rows'] = ''
+    delete_session_data(session['csrf_token'])
     if form.validate_on_submit():
+        inputted_jobs = []
+
+        session['message'] = ''
+        session['rows'] = ''
         if form['radio'].data == 'yes':
             for i in range(1, 6):
                 if form["job_title_" + str(i)].data:
@@ -48,17 +55,10 @@ def work_history():
         if len(inputted_jobs) > 0:
             recommended_soc_codes, recommended_titles = recommend_jobs.run(inputted_jobs)
             session['titles'] = recommended_titles
-
-            recommended_jobs = []
-            get_vacancies_from_titles(inputted_jobs, session['postcode'], recommended_jobs)
-            get_vacancies_from_titles(recommended_titles, session['postcode'], recommended_jobs)
-            get_vacancies_from_soc_codes(recommended_soc_codes, session['postcode'], recommended_jobs)
-
-            session['rows'] = [{'desc': recommend_job['summary'], 'job': recommend_job['title'], 'link': recommend_job['link']}
-                               for recommend_job in recommended_jobs]
+            thread = threading.Thread(target=task, args=(inputted_jobs, recommended_titles, recommended_soc_codes, session['postcode'], session['csrf_token']))
+            thread.start()
         else:
-            session['message'] = NO_JOBS_FOUND_MESSAGE
-
+            session['message'] = NO_JOBS_ENTERED.format("work history")
         return redirect(url_for("main.preferred"))
     return render_template("work_history.html", form=form)
 
@@ -82,7 +82,7 @@ def preferred():
             recommended_pref_soc_codes, recommended_pref_titles = recommend_jobs.run(jobs)
             session['pref_titles'] = recommended_pref_titles
         else:
-            session['pref_message'] = NO_JOBS_FOUND_MESSAGE
+            session['pref_message'] = NO_JOBS_ENTERED.format("preferred jobs")
         return redirect(url_for("main.summary"))
     return render_template("preferred.html", form=form)
 
@@ -107,7 +107,17 @@ def recommended_titles():
 
 @bp.route("/recommended_vacancies", methods=["GET", "POST"])
 def recommended_vacancies():
-    return render_template("recommended_vacancies.html", rows=session['rows'], message=session['message'])
+    vacancy_rows = get_vacancy_rows(session['csrf_token'])
+    error_message = ''
+    if len(vacancy_rows) == 0:
+        if session['message'] == '':
+            error_message = REFRESH_MESSAGE
+        else:
+            error_message = ENTER_WORK_HISTORY
+
+    return render_template("recommended_vacancies.html",
+                           rows=vacancy_rows,
+                           message=error_message)
 
 
 @bp.route("/accessibility", methods=["GET"])
@@ -162,3 +172,13 @@ def http_exception(error):
 def csrf_error(error):
     flash("The form you were submitting has expired. Please try again.")
     return redirect(request.full_path)
+
+
+def task(inputted_jobs, recommend_titles, recommended_soc_codes, current_postcode, session_id):
+    recommended_jobs = []
+    get_vacancies_from_titles(inputted_jobs, current_postcode, recommended_jobs)
+    get_vacancies_from_titles(recommend_titles, current_postcode, recommended_jobs)
+    get_vacancies_from_soc_codes(recommended_soc_codes, current_postcode, recommended_jobs)
+
+    for recommend_job in recommended_jobs:
+        insert_history(session_id, recommend_job['summary'], recommend_job['title'], recommend_job['link'])
