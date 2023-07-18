@@ -3,11 +3,13 @@ import json
 from flask_wtf.csrf import CSRFError
 from werkzeug.exceptions import HTTPException
 
+from Backend.job_vacancies import get_vacancies_from_soc_codes, get_vacancies_from_titles
 from app.main import bp
 from app.main.forms import CookiesForm, JobTitle, PrefJob, Postcode
 
-from Backend import job_vacancies
+from Backend import recommend_jobs
 
+NOT_PROVIDED = "Not provided"
 NO_JOBS_FOUND_MESSAGE = "We could not find any recommended jobs for you at the moment, please try again later."
 
 user_info = "user_info"
@@ -30,7 +32,7 @@ def postcode():
 
 @bp.route("/work_history", methods=["GET", "POST"])
 def work_history():
-    jobs = []
+    inputted_jobs = []
     form = JobTitle()
     session['message'] = ''
     session['rows'] = ''
@@ -38,26 +40,22 @@ def work_history():
         if form['radio'].data == 'yes':
             for i in range(1, 6):
                 if form["job_title_" + str(i)].data:
-                    jobs.append(form["job_title_" + str(i)].data)
-            session["job_titles"] = jobs
+                    inputted_jobs.append(form["job_title_" + str(i)].data)
+            session["job_titles"] = inputted_jobs
         else:
             session['job_titles'] = []
 
-        if len(jobs) > 0:
-            recommend_job = job_vacancies.run(jobs, 10, session['postcode'], 5)
+        if len(inputted_jobs) > 0:
+            recommended_soc_codes, recommended_titles = recommend_jobs.run(inputted_jobs)
+            session['titles'] = recommended_titles
 
-            recommend_job_1 = recommend_job[0]
-            recommend_job_2 = recommend_job[1]
-            recommend_job_3 = recommend_job[2]
-            recommend_job_4 = recommend_job[3]
-            recommend_job_5 = recommend_job[4]
+            recommended_jobs = []
+            get_vacancies_from_titles(inputted_jobs, session['postcode'], recommended_jobs)
+            get_vacancies_from_titles(recommended_titles, session['postcode'], recommended_jobs)
+            get_vacancies_from_soc_codes(recommended_soc_codes, session['postcode'], recommended_jobs)
 
-            session['rows'] = [
-                {'desc': recommend_job_1['summary'], 'job': recommend_job_1['title'], 'link': recommend_job_1['link']},
-                {'desc': recommend_job_2['summary'], 'job': recommend_job_2['title'], 'link': recommend_job_2['link']},
-                {'desc': recommend_job_3['summary'], 'job': recommend_job_3['title'], 'link': recommend_job_3['link']},
-                {'desc': recommend_job_4['summary'], 'job': recommend_job_4['title'], 'link': recommend_job_4['link']},
-                {'desc': recommend_job_5['summary'], 'job': recommend_job_5['title'], 'link': recommend_job_5['link']}]
+            session['rows'] = [{'desc': recommend_job['summary'], 'job': recommend_job['title'], 'link': recommend_job['link']}
+                               for recommend_job in recommended_jobs]
         else:
             session['message'] = NO_JOBS_FOUND_MESSAGE
 
@@ -67,46 +65,48 @@ def work_history():
 
 @bp.route("/preferred", methods=["GET", "POST"])
 def preferred():
+    jobs = []
     form = PrefJob()
     session['pref_message'] = ''
     session['pref_rows'] = ''
     if form.validate_on_submit():
         if form['radio'].data == 'yes':
-            session['pref_job'] = form.pref_job.data
-            print(session['pref_job'])
+            for i in range(1, 6):
+                if form["pref_job_" + str(i)].data:
+                    jobs.append(form["pref_job_" + str(i)].data)
+            session["pref_job_titles"] = jobs
         else:
-            session['pref_job'] = ''
+            session['pref_job_titles'] = []
 
         if len(session['pref_job']) > 0:
-            preferred_job = job_vacancies.run(session['pref_job'], 10, session['postcode'], 3)
-            preferred_job_1 = preferred_job[0]
-            preferred_job_2 = preferred_job[1]
-            preferred_job_3 = preferred_job[2]
-
-            session['pref_rows'] = [
-                {'desc': preferred_job_1['summary'], 'job': preferred_job_1['title'],
-                 'link': preferred_job_1['link']},
-                {'desc': preferred_job_2['summary'], 'job': preferred_job_2['title'],
-                 'link': preferred_job_2['link']},
-                {'desc': preferred_job_3['summary'], 'job': preferred_job_3['title'],
-                 'link': preferred_job_3['link']}]
+            recommended_pref_soc_codes, recommended_pref_titles = recommend_jobs.run(jobs)
+            session['pref_titles'] = recommended_pref_titles
         else:
             session['pref_message'] = NO_JOBS_FOUND_MESSAGE
-        print(session)
         return redirect(url_for("main.summary"))
     return render_template("preferred.html", form=form)
 
 
 @bp.route("/summary", methods=["GET", "POST"])
 def summary():
-    return render_template("summary.html", job_titles=session['job_titles'], pref_job=session['pref_job'],
+    return render_template("summary.html",
+                           job_titles=session['job_titles'] if session['job_titles'] != "" else NOT_PROVIDED,
+                           pref_job=session['pref_job'] if session['pref_job'] != "" else NOT_PROVIDED,
                            postcode=session['postcode'])
 
 
-@bp.route("/recommendation", methods=["GET", "POST"])
-def recommendation():
-    return render_template("recommendation.html", rows=session['rows'], pref_rows=session['pref_rows'],
-                           message=session['message'], pref_message=session['pref_message'])
+@bp.route("/recommended_titles", methods=["GET", "POST"])
+def recommended_titles():
+    return render_template("recommended_titles.html",
+                           titles=session['titles'],
+                           pref_titles=session['pref_titles'] if 'pref_titles' in session.keys() else '',
+                           message=session['message'],
+                           pref_message=session['pref_message'])
+
+
+@bp.route("/recommended_vacancies", methods=["GET", "POST"])
+def recommended_vacancies():
+    return render_template("recommended_vacancies.html", rows=session['rows'], message=session['message'])
 
 
 @bp.route("/accessibility", methods=["GET"])

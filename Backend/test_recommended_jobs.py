@@ -99,7 +99,7 @@ class MyTestCase(unittest.TestCase):
                                             {'id': 'OI', 'interests': [
                                                 {'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]}]}
 
-        actual_data = recommend_jobs.get_interests_from_onet_code(onet_1, 1)
+        actual_data = recommend_jobs.get_interests_from_onet_code(onet_1)
 
         mock_api.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/interests/53-6041.00')
         self.assertEqual(expected_data, actual_data)
@@ -184,7 +184,7 @@ class MyTestCase(unittest.TestCase):
 
         mocked_soc.assert_called_with('engineer')
         mocked_onet.assert_called_with('1')
-        mocked_onet_skills.assert_called_with('2', [], 2)
+        mocked_onet_skills.assert_called_with('2', [])
         mocked_onet_interests.assert_called_with('2', 1)
         mocked_search.assert_has_calls([mock.call(['2.A.1.a', '2.A.1.b'], ''), mock.call('', ['1.B.1.a'])])
         mocked_job.assert_called_with([1115], 1)

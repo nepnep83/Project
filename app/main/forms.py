@@ -112,8 +112,8 @@ class PrefJob(FlaskForm):
         ],
         description="Select one option.",
     )
-    pref_job = StringField(
-        "Job",
+    pref_job_1 = StringField(
+        "Preferred job",
         widget=GovTextInput(),
         validators=[ConditionalValidation(
                         "radio",
@@ -123,9 +123,73 @@ class PrefJob(FlaskForm):
                              regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
                              message="Inputs must only contain alphabetical and selected special characters",
                          ),
-                         InputRequired(),
-                         ValidJobsRequired('pref_job')
-                         ])
+                         OneInputRequired(["pref_job_2", "pref_job_3", "pref_job_4", "pref_job_5"], "Preferred job"),
+                         ValidJobsRequired('pref_job_1')
+                         ]),
+        ]
+    )
+    pref_job_2 = StringField(
+        "Preferred job 2",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 ValidJobsRequired('pref_job_2')
+                 ])
+        ]
+    )
+    pref_job_3 = StringField(
+        "Preferred job 3",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 ValidJobsRequired('pref_job_3')
+                 ])
+        ]
+    )
+    pref_job_4 = StringField(
+        "Preferred job 4",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 ValidJobsRequired('pref_job_4')
+                 ])
+        ]
+    )
+    pref_job_5 = StringField(
+        "Preferred job 5",
+        widget=GovTextInput(),
+        validators=[
+            ConditionalValidation(
+                "radio",
+                "yes",
+                [Length(max=100, message="Input must not be more than 100 characters"),
+                 Regexp(
+                     regex=r"[a-zA-Z ^!@£$%&()€#_=+-≠\[\\\]{}\"';\\\:|?,./âêîôûŵŷÂÊÎÔÛŴŶ]*$",
+                     message="Inputs must only contain alphabetical and selected special characters",
+                 ),
+                 ValidJobsRequired('pref_job_5')
+                 ])
                     ]
     )
     submit = SubmitField("Continue", widget=GovSubmitInput())

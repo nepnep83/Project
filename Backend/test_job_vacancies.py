@@ -43,7 +43,7 @@ class MyTestCase(unittest.TestCase):
                           'location': {'location': 'BR1 3NN', 'city': '', 'area': '', 'postcode': '', 'country': ''},
                           'link': 'https://findajob.dwp.gov.uk/details/12181272'}]
 
-        actual_data = job_vacancies.find_vacancies(distance, location, job, _range)
+        actual_data = job_vacancies.get_vacancies_from_soc_codes(distance, location, job, _range)
 
         mocked_api.assert_called_with(
             "https://api.lmiforall.org.uk/api/v1/vacancies/search?limit=5&radius=1&location=2&keywords=3")

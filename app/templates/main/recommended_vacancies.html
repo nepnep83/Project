@@ -9,7 +9,7 @@
   {{ super() }}
   {{ govukBackLink({
     'text': "Back",
-    'href': url_for('main.summary')
+    'href': url_for('main.recommended_titles')
   }) }}
 {% endblock %}
 
@@ -18,8 +18,14 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Your recommended jobs</h1>
+    <h1 class="govuk-heading-l">Your recommended job vacancies</h1>
     <h2 class="govuk-heading-m">Based on your previous work history</h2>
+        <ul class="govuk-list govuk-list--bullet">
+            {% for title in titles %}
+            <li>{{title}}</li>
+            {% endfor %}
+
+        </ul>
 
       {% if message == '' %}
       {% set row_values = [] %}
@@ -52,41 +58,6 @@
     {{ govukSummaryList({
       'rows': row_values
     }) }}
-
-    <h2 class="govuk-heading-m">Based on your preferred jobs</h2>
-
-    {% if pref_message == '' %}
-    {% set pref_row_values = [] %}
-    {% for row in pref_rows %}
-      {% set next_row =
-    {
-          'key': {
-            'text': row.job
-          },
-          'value': {
-            'html': row.desc[:100] + '<span class="govuk-body text" id="pref_txt%s">'|format(loop.index|string) + row.desc[100:] + '</span><span class="govuk-body dots" id="pref_dots%s">'|format(loop.index|string) +'...</span> <span class="govuk-link" id="pref_more%s">'|format(loop.index|string) +' &ltshow more> </span>'
-          },
-          'actions': {
-            'items': [
-              {
-                'href': row.link,
-                'text': 'Job '+ loop.index|string,
-                'visuallyHiddenText': row.job+" link"
-              }
-            ]
-          }
-        }
-    %}
-    {{ pref_row_values.append(next_row) or "" }}
-    {% endfor %}
-      {% else %}
-      <p class="govuk-body">{{ pref_message }}</p>
-      {% endif %}
-
-    {{ govukSummaryList({
-      'rows': pref_row_values
-    }) }}
-
   </div>
 </div>
 {% endblock %}
