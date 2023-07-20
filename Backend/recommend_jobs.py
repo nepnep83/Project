@@ -30,7 +30,7 @@ def get_soc_code(job):
 
 def soc_to_onet(soc):
     onet_response = common.api_call('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/' + str(soc))
-    return onet_response['onetCodes'][0]['code']
+    return onet_response['onetCodes'][0]['code'] if len(onet_response['onetCodes']) > 0 else []
 
 
 def get_skills_from_onet_code(onet):
@@ -95,16 +95,12 @@ def get_recommended_jobs(recommended_soc_codes, no_of_jobs):
 def run(jobs):
     skills = []
 
-    try:
-        for job in jobs:
-            soc = get_soc_code(job)
-            onet = soc_to_onet(soc)
+    for job in jobs:
+        soc = get_soc_code(job)
+        onet = soc_to_onet(soc if soc != 6125 else 2319)
 
-            new_skills = get_skills_from_onet_code(onet)
-            add_new_skills_and_sort(skills, new_skills)
-
-    except Exception as e:
-        print(e)
+        new_skills = get_skills_from_onet_code(onet)
+        add_new_skills_and_sort(skills, new_skills)
 
     if skills:
         minimum_value = skills[0]['value'] - len(jobs)
@@ -115,4 +111,4 @@ def run(jobs):
 if __name__ == "__main__":
     job_num = 5
 
-    run(['Plumber', 'engineer', 'lawyer'], job_num)
+    run(['Plumber', 'engineer', 'lawyer'])
