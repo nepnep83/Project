@@ -109,6 +109,4 @@ def run(jobs):
 
 
 if __name__ == "__main__":
-    job_num = 5
-
     run(['Plumber', 'engineer', 'lawyer'])
