@@ -65,6 +65,8 @@ def get_vacancies_from_soc_codes(recommended_soc_codes, postcode, recommended_jo
                     time.sleep(1)
                     if vacancies == "not found" or len(vacancies) == 0:
                         current_title_counter += 1
+                    elif vacancies == "too many calls":
+                        time.sleep(15)
                 if vacancies[0]['title'] not in [recommended_job['title'] for recommended_job in recommended_jobs]:
                     recommended_jobs.append(vacancies[0])
                 if len(recommended_jobs) >= 5:
@@ -77,7 +79,7 @@ def get_vacancies_from_soc_codes(recommended_soc_codes, postcode, recommended_jo
 
 def run(jobs, distance_to_job, location_of_claimant, _range):
     recommended_soc_codes = recommend_jobs.run(jobs)
-    local_jobs_experience = get_vacancies_from_soc_codes(distance_to_job, location_of_claimant, recommended_soc_codes, _range)
+    local_jobs_experience = get_vacancies_from_soc_codes(distance_to_job, location_of_claimant, recommended_soc_codes)
 
     return local_jobs_experience
 
