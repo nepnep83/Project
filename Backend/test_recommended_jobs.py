@@ -4,16 +4,12 @@ from unittest.mock import Mock
 
 from Backend import recommend_jobs
 
-_range = 2
-interests_range = 1
-job_num = 1
 job = ['plumber']
-interest = ['engineer']
 onet_1 = "53-6041.00"
-skill_1 = {'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 3.0}
-skill_2 = {'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}
-skill_3 = {"id": "2.A.1.b", "name": "Active Listening", "value": 67.62}
-skill_4 = {'id': '2.A.1.b', 'name': 'Writing Comprehension', 'value': 4.0}
+SKILL_1 = {'id': 'a', 'name': 'Reading Comprehension', 'value': 1}
+SKILL_2 = {'id': 'b', 'name': 'Realistic', 'value': 2}
+SKILL_3 = {"id": "c", "name": "Active Listening", "value": 3}
+SKILL_4 = {'id': '2.A.1.a', 'name': 'Writing Comprehension', 'value': 4}
 skill_id_1 = '2.A.1.a'
 skill_id_2 = '2.A.1.b'
 
@@ -71,84 +67,68 @@ class MyTestCase(unittest.TestCase):
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/1', verify=False)
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('Backend.recommend_jobs.skill_sort')
+    @mock.patch('requests.get')
+    def test_soc_to_onet_no_onet(self, mocked_request):
+        soc = "1"
+        expected_data = []
+        mocked_request.return_value = Mock(text='{"onetCodes":[]}', status_code=200)
+
+        actual_data = recommend_jobs.soc_to_onet(soc)
+
+        mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/soc2onet/1', verify=False)
+        self.assertEqual(expected_data, actual_data)
+
     @mock.patch('requests.get')
     @mock.patch('requests.models.Response.json')
-    def test_onet_skills(self, mocked_json, mocked_request, mocked_sort):
-        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
-        expected_data = ['2.A.1.a', '2.A.1.b']
+    def test_get_skills_from_onet_code(self, mocked_json, mocked_request):
+        expected_data = [SKILL_3, SKILL_2]
         mocked_request.return_value = mocked_json
-        mocked_json.json.return_value = {"scales": [{"id": "LV", "skills": [
-            {"id": "2.A.1.a", "name": "Reading Comprehension", "value": 4.0},
-            {"id": "2.A.1.b", "name": "Active Listening", "value": 3.62}]}]}
-        mocked_sort.return_value = ['2.A.1.a', '2.A.1.b']
+        mocked_json.json.return_value = {"scales": [{"skills": [SKILL_1, SKILL_2, SKILL_3]}]}
 
-        actual_data = recommend_jobs.get_skills_from_onet_code(onet_1, _range)
+        actual_data = recommend_jobs.get_skills_from_onet_code(onet_1)
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/skills/53-6041.00', verify=False)
-        mocked_sort.assert_called_with([{"id": "2.A.1.a", "name": "Reading Comprehension", "value": 4.0},
-                                        {"id": "2.A.1.b", "name": "Active Listening", "value": 3.62}], skill_list)
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('Backend.common.api_call')
-    def test_onet_interests(self, mock_api):
-        expected_data = [{'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]
-        mock_api.return_value = {'onetcode': '23-1011.00',
-                                 'scales': [{'id': 'IH', 'interests': [
-                                     {'id': '1.B.1.g', 'name': 'First Interest High-Point', 'value': 5.0}]},
-                                            {'id': 'OI', 'interests': [
-                                                {'id': '1.B.1.a', 'name': 'Realistic', 'value': 1.33}]}]}
+    def test_add_new_skills_and_sort_common_name(self):
+        skill_list = [SKILL_1]
+        expected_data = [{'id': 'a', 'name': 'Reading Comprehension', 'value': 2}]
 
-        actual_data = recommend_jobs.get_interests_from_onet_code(onet_1)
+        recommend_jobs.add_new_skills_and_sort([SKILL_1], skill_list)
 
-        mock_api.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/interests/53-6041.00')
-        self.assertEqual(expected_data, actual_data)
+        self.assertEqual(expected_data, skill_list)
 
-    def test_skill_sort(self):
-        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
-        expected_data = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
+    def test_add_new_skills_and_sort_different_name(self):
+        skill_list = [SKILL_1]
+        expected_data = [SKILL_2, SKILL_1]
 
-        actual_data = recommend_jobs.add_new_skills_and_sort([skill_1], skill_list)
+        recommend_jobs.add_new_skills_and_sort(skill_list, [SKILL_2])
 
-        self.assertEqual(expected_data, actual_data)
+        self.assertEqual(expected_data, skill_list)
 
-    def test_skill_sort_different_name(self):
-        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
-        test_skill = [{'id': '2.A.1.a', 'name': 'writing Comprehension', 'value': 3.0}]
-        expected_data = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
+    def test_add_new_skills_and_sort_reduce_common_values(self):
+        skill_list = []
+        expected_data = [{'id': '2.A.1.a', 'name': 'Writing Comprehension', 'value': 2}]
 
-        actual_data = recommend_jobs.add_new_skills_and_sort(test_skill, skill_list)
+        recommend_jobs.add_new_skills_and_sort(skill_list, [SKILL_4])
 
-        self.assertEqual(expected_data, actual_data)
+        self.assertEqual(expected_data, skill_list)
 
-    def test_skill_sort_multiple_skills(self):
-        skill_list = [{'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 4.0}]
-        skill = [skill_1, skill_3]
-        expected_data = [{"id": "2.A.1.b", "name": "Active Listening", "value": 67.62},
-                         {'id': '2.A.1.a', 'name': 'Reading Comprehension', 'value': 7.0}]
-
-        actual_data = recommend_jobs.add_new_skills_and_sort(skill, skill_list)
-
-        self.assertEqual(expected_data, actual_data)
-
-    def test_get_ids(self):
-        skill = [skill_1, skill_3]
-        expected_data = ['2.A.1.a', '2.A.1.b']
+    def test_get_skills_ids(self):
+        skill = [SKILL_1, SKILL_2]
+        expected_data = ['a', 'b']
 
         actual_data = recommend_jobs.get_skills_ids(skill)
 
         self.assertEqual(expected_data, actual_data)
 
-    @mock.patch('requests.get')
-    def test_reverse_search(self, mocked_request):
-        skills = '1'
-        expected_data = [1115]
-        mocked_request.return_value = Mock(text='{"selection":{"skills":{"2.A.1.c":"Writing", '
-                                                '"2.A.1.d":"Speaking"}}, "results":[{"likely_soc_codes":[1115]}]}',
-                                           status_code=200)
+    @mock.patch('Backend.common.api_call', side_effect=[{"results": [{"likely_soc_codes": [123], "title": "title"}]}])
+    def test_get_recommended_soc_codes(self, mocked_request):
+        skills = ['1', '2']
+        expected_data = ([123], ['title'])
         actual_data = recommend_jobs.get_recommended_soc_codes(skills)
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/o-net/reversematch?weights=100%2C100'
-                                          '%2C100%2C100&skills=1', verify=False)
+                                          '%2C100%2C100&skills=1,2')
         self.assertEqual(expected_data, actual_data)
 
     @mock.patch('requests.get')
@@ -158,7 +138,7 @@ class MyTestCase(unittest.TestCase):
         mocked_request.return_value = Mock(text='{"soc":1115,"add_titles":["Chief executives", "senior, officials"]}',
                                            status_code=200)
 
-        actual_data = recommend_jobs.get_recommended_jobs(rev, job_num)
+        actual_data = recommend_jobs.get_recommended_jobs(rev)
 
         mocked_request.assert_called_with('https://api.lmiforall.org.uk/api/v1/soc/code/1', verify=False)
         self.assertEqual(expected_data, actual_data)
@@ -175,12 +155,12 @@ class MyTestCase(unittest.TestCase):
         expected_data = ([job], [job])
         mocked_job.return_value = [job]
         mocked_search.return_value = [1115]
-        mocked_onet_interests.return_value = [skill_2]
-        mocked_onet_skills.return_value = [skill_1, skill_4]
+        mocked_onet_interests.return_value = [SKILL_2]
+        mocked_onet_skills.return_value = [SKILL_1, SKILL_4]
         mocked_onet.return_value = '2'
         mocked_soc.return_value = '1'
 
-        actual_data = recommend_jobs.run(job, _range)
+        actual_data = recommend_jobs.run(job)
 
         mocked_soc.assert_called_with('engineer')
         mocked_onet.assert_called_with('1')
